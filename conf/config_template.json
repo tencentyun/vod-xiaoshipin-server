@@ -1,0 +1,32 @@
+{
+    "dbconfig":{
+        "host":"127.0.0.1",
+        "user":"litvideo",
+        "password":"litvideo",
+        "database":"db_litvideo",
+        "port":3306,
+        "supportBigNumbers": true,
+        "connectionLimit":10
+    },
+    "tencentyunaccout":{
+        "appid":"",
+        "SubAppId":"",
+        "SecretId": "",
+        "SecretKey": ""
+    },
+
+    "cos":{
+        "appid":"",
+        "bucket":"",
+        "region":"",
+        "SecretId": "",
+        "SecretKey": ""
+    },
+
+
+    "server":{
+        "ip":"0.0.0.0",
+        "port":8001,
+        "reliablecb":false
+    }
+}

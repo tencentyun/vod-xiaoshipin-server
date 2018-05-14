@@ -1,0 +1,31 @@
+{
+  "name": "HTTPServer",
+  "version": "0.0.0",
+  "description": "Another awesome nodejs server",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "assert-plus": "^1.0.0",
+    "bluebird": "^3.5.1",
+    "body-parser": "~1.12.4",
+    "compression": "^1.4.4",
+    "cookie-parser": "~1.3.5",
+    "ejs": "~2.3.1",
+    "express": "~4.12.4",
+    "moment": "^2.21.0",
+    "morgan": "~1.5.3",
+    "mysql": "^2.15.0",
+    "qcloudapi-sdk": "^0.1.6",
+    "querystring": "^0.2.0",
+    "rolling-rate-limiter": "^0.1.10",
+    "serve-favicon": "~2.2.1"
+  },
+  "taf": {
+    "node": 0,
+    "platform": "213.taf.wsd.com",
+    "app": "MTT",
+    "service": "Test"
+  }
+}
