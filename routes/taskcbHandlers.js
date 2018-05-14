@@ -29,7 +29,7 @@ async function updateBasicInfo(fileId) {
         basicInfoItem['title'] = basicInfo.name;
         basicInfoItem['create_time'] = moment(basicInfo.createTime, 'X').format('YYYY-MM-DD HH:mm:ss');
         basicInfoItem['frontcover'] = basicInfo.coverUrl;
-
+        basicInfoItem['play_url'] = basicInfo.sourceVideoUrl;
         console.log(basicInfoItem);
         let results = null;
         results = await conn.queryAsync('select * from tb_ugc where file_id=?', [fileId]);
