@@ -162,7 +162,7 @@ async function login(req, res) {
             "refresh_token": refresh_token, //续期token，随机数
             "expires": EXPIRE_TIME,  // 过期时间（秒）
             "vod_info":{
-                appid:gVodHelper.conf.appid,
+                Appid:gVodHelper.conf.appid,
                 SubAppId:gVodHelper.conf.SubAppId,
                 SecretId:gVodHelper.conf.SecretId,
             },
@@ -411,7 +411,7 @@ async function get_ugc_list(req, res) {
         total = result[0].all_count;
 
         if (total != 0) {
-            let querySql = "select a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,a.create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid order by create_time desc limit ?,?";
+            let querySql = "select a.status,a.review_status,a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,a.create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid order by create_time desc limit ?,?";
             list = await conn.queryAsync(querySql, [index, count]);
         }
     } catch (err) {
