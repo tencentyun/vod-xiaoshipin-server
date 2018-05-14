@@ -56,7 +56,7 @@ curl -d "index=0&count=10" "/get_ugc_list"
 
 ### 接口应答
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 |  200 
 message| string | 返回消息 |  
 data | object | 返回数据 |
@@ -64,7 +64,7 @@ data.list | array | 视频列表 |
 data.list.n | ugcinfo | 视频详细信息 |
 ### ugcinfo
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 status | integer | 视频状态 |  0 
 review_status| integer | 视频审核状态 |  0
 userid | string | 所属用户id | 
@@ -129,7 +129,7 @@ password | string | 是| 密码 |  |    md5(md5(password)+userid)
 
 ### 接口应答
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 
@@ -169,7 +169,7 @@ password | string | 是| 密码 |  |    md5(md5(password)+userid)
 ### 接口应答
 
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-:
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 data| object | 返回数据 |  
@@ -235,8 +235,7 @@ POST
 
 ### 接口应答
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
-code | number | 返回码 | 200 
+:-: | :-: | :-: | :-: 
 message| string | 返回消息 |  
 data| object | 返回数据 |  
 data.signKey | string | 按照cos的签名规则计算出来的签名key | 
@@ -288,7 +287,7 @@ frontcover | string | 是| 封面地址 |  |
 ### 接口应答
 
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 
@@ -329,7 +328,7 @@ POST
 ### 接口应答
 
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 data| object | 返回数据 |  
@@ -382,7 +381,7 @@ POST
 ### 接口应答
 
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 data| object | 返回数据 |  
@@ -432,7 +431,7 @@ play_url | string | 是| 播放地址 |  |
 ### 接口应答
 
 参数名 | 类型 |  描述 | 示例 
-:-: | :-: | :-: | :-: | :-: | :-: 
+:-: | :-: | :-: | :-: 
 code | number | 返回码 | 200 
 message| string | 返回消息 |  
 
