@@ -69,6 +69,21 @@ function initilizeApplication(){
 function initMiddleware() {
    
     app.use(compress());
+
+    //获取原始post值用来计算校验
+    app.use(function(req, res, next){
+        var reqData = [];
+        var size = 0;
+        req.on('data', function (data) {
+           reqData.push(data);
+            size += data.length;
+        });
+        req.on('end', function () {
+            req.reqData = Buffer.concat(reqData, size);
+        });
+        next();
+    });
+
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());

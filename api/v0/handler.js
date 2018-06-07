@@ -12,23 +12,22 @@ const moment = require("moment");
 let VodHelper = require(APP_BASE_PATH + 'utils/vod_helper').VodHelper;
 
 
-const EXPIRE_TIME = 100;
+const EXPIRE_TIME = 24 * 60 * 60;
 
-setInterval(async function(){
+setInterval(async function () {
     let conn = null;
-    try{
-       conn = await gDataBases["db_litvideo"].getConnection();
-       let result = await conn.queryAsync("delete from tb_token where expire_time < now()");
-    }catch(err){
+    try {
+        conn = await gDataBases["db_litvideo"].getConnection();
+        let result = await conn.queryAsync("delete from tb_token where expire_time < now()");
+    } catch (err) {
 
         console.err(err);
-    }finally{}
+    } finally { }
     if (conn != null) {
         conn.release();
     }
-   
+}, EXPIRE_TIME * 1000)
 
-},EXPIRE_TIME * 1000)
 
 
 async function register(req, res) {
@@ -39,27 +38,39 @@ async function register(req, res) {
 
     if (!userid || userid.length > 50) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "用户名格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_USERID,
+            "message": "用户名格式错误",
         });
 
     }
 
     if (!password || password.length > 255) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "密码格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PASSWORD,
+            "message": "密码格式错误",
         });
     }
 
 
     let conn = null;
+    let result = null;
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
+
+        result = await conn.queryAsync("select * from tb_account where userid=?", [userid])
+        if (result.length != 0) {
+            return res.status(400).json({
+                'code': ENUMS.ErrCode.EC_USER_EXIST,
+                'message': '用户已经存在'
+            });
+        }
+
+
         let sql = "insert into tb_account(userid,password) values(?,?)";
-        let result = await conn.queryAsync(sql, [userid, password]);
+        await conn.queryAsync(sql, [userid, password]);
 
     } catch (err) {
+        console.error(err);
         return res.status(500).json({
             'code': ENUMS.ErrCode.EC_DATABASE_ERROR,
             'message': '服务器错误'
@@ -92,16 +103,16 @@ async function login(req, res) {
     if (!userid || userid.length > 50) {
 
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "用户名格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_USERID,
+            "message": "用户名格式错误",
         });
 
     }
 
     if (!password || password.length > 255) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "密码格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PASSWORD,
+            "message": "密码格式错误",
         });
     }
 
@@ -115,8 +126,8 @@ async function login(req, res) {
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
 
-        let accountSql = "select * from tb_account where userid=? and password=?";
-        let result = await conn.queryAsync(accountSql, [userid, password]);
+        let accountSql = "select * from tb_account where userid=?";
+        let result = await conn.queryAsync(accountSql, [userid]);
         if (result.length == 0) {
             return res.status(400).json({
                 code: ENUMS.ErrCode.EC_USER_NOT_EXIST,
@@ -124,22 +135,32 @@ async function login(req, res) {
             });
         }
 
-        token = crypto.createHash("md5").update(userid + "" + new Date().getTime() + "" + Math.random()+"token").digest("hex");
-        refresh_token = crypto.createHash("md5").update(userid + "" + new Date().getTime() + "" + Math.random()+"refresh_token").digest("hex");
-        expire_time = moment().add(EXPIRE_TIME,'seconds').format('YYYY-MM-DD HH:mm:ss');
+        if (result[0].password != password) {
+            return res.status(400).json({
+                code: ENUMS.ErrCode.EC_USER_PWD_ERROR,
+                message: ENUMS.ErrCodeMsg.EC_USER_PWD_ERROR
+            });
+        }
+
+        token = crypto.createHash("md5").update(userid + "" + new Date().getTime() + "" + Math.random() + "token").digest("hex");
+        refresh_token = crypto.createHash("md5").update(userid + "" + new Date().getTime() + "" + Math.random() + "refresh_token").digest("hex");
+        expire_time = moment().add(EXPIRE_TIME, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
 
-        result = await conn.queryAsync("select * from tb_token where userid=? and expire_time>now() order by expire_time",[userid]);
+        result = await conn.queryAsync("select * from tb_token where userid=? and expire_time>now() order by expire_time", [userid]);
         let tokenSql = "";
-      
-        if(result.length > 3){
+
+        if (result.length > 0) {
+
+            token = result[0].token;
+            refresh_token = result[0].refresh_token;
             tokenSql = `update tb_token set token =?,refresh_token=?,expire_time=?,userid = ? where token='${result[0].token}'`
 
-        }else{
+        } else {
             tokenSql = "insert into tb_token(token,refresh_token,expire_time,userid) values(?,?,?,?)"
 
         }
-        await conn.queryAsync(tokenSql,[token,refresh_token,expire_time,userid]);
+        await conn.queryAsync(tokenSql, [token, refresh_token, expire_time, userid]);
 
     } catch (err) {
         console.error(err);
@@ -161,17 +182,23 @@ async function login(req, res) {
             "token": token,    //随机数
             "refresh_token": refresh_token, //续期token，随机数
             "expires": EXPIRE_TIME,  // 过期时间（秒）
-            "vod_info":{
-                Appid:gVodHelper.conf.appid,
-                SubAppId:gVodHelper.conf.SubAppId,
-                SecretId:gVodHelper.conf.SecretId,
+            "vod_info": {
+                Appid: gVodHelper.conf.appid,
+                SubAppId: gVodHelper.conf.SubAppId,
+                SecretId: gVodHelper.conf.SecretId,
             },
             "cos_info": {
                 "Bucket": GLOBAL_CONFIG.cos.bucket,           //cos bucket名
                 "Region": GLOBAL_CONFIG.cos.region,           //cos bucket所在地域
                 "Appid": GLOBAL_CONFIG.cos.appid,           //cos appid
                 "SecretId": GLOBAL_CONFIG.cos.SecretId          //cos secretid
-            }
+            },
+            "roomservice_sign": {       //登录roomservice的签名
+                "sdkAppID": 123456,     // 云通信 sdkappid
+                "accountType": "xxxx",  // 云通信 账号集成类型
+                "userID": "xxxx",       // 用户id
+                "userSig": "xxxxxxxx",  // 云通信用户签名
+            },
         }
     })
 }
@@ -182,8 +209,8 @@ async function get_user_info(req, res) {
     let userid = param.userid;
     if (!userid || userid.length > 50) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "用户名格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "用户名格式错误",
         });
     }
 
@@ -227,9 +254,6 @@ function checkString({
     str, minLength, maxLength
 }) {
 
-    if (!str) {
-        return false;
-    }
 
     if (!minLength) {
         minLength = 0;
@@ -237,6 +261,11 @@ function checkString({
 
     if (!maxLength) {
         maxLength = 65536;
+    }
+
+
+    if (str == undefined && minLength > 0) {
+        return false;
     }
 
     if (str.length > maxLength || str.length < minLength) {
@@ -256,33 +285,33 @@ async function upload_user_info(req, res) {
 
     if (!checkString({ str: userid, maxLength: 50 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "用户名格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "用户名格式错误",
         });
     }
 
     if (!checkString({ str: nickname, maxLength: 100 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "昵称格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "昵称格式错误",
         });
     }
 
     if (!checkString({ str: avatar, maxLength: 256 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "头像格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "头像格式错误",
         });
     }
 
     if (!checkString({ str: frontcover, maxLength: 256 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "封面格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "封面格式错误",
         });
     }
 
-    if(sex!=0 && sex!=1){
+    if (sex != 0 && sex != 1) {
         sex = -1;
 
     }
@@ -291,7 +320,7 @@ async function upload_user_info(req, res) {
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
 
-        let accountSql = gDataBases["db_litvideo"].makeUpdateSql("tb_account", { sex,avatar, nickname, frontcover }, mysql.format("where userid=?", [userid]))
+        let accountSql = gDataBases["db_litvideo"].makeUpdateSql("tb_account", { sex, avatar, nickname, frontcover }, mysql.format("where userid=?", [userid]))
         let result = await conn.queryAsync(accountSql);
     } catch (err) {
         console.error(err);
@@ -316,45 +345,46 @@ async function upload_ugc(req, res) {
     let param = req.body;
 
 
-    if (!checkString({ str: param.userid, minLength:1,maxLength: 50 })) {
+
+    if (!checkString({ str: param.userid, minLength: 1, maxLength: 50 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "用户名格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "用户名格式错误",
         });
     }
 
-    if (!checkString({ str: param.file_id,minLength:1, maxLength: 100 })) {
+    if (!checkString({ str: param.file_id, minLength: 1, maxLength: 100 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "文件id格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "文件id格式错误",
         });
     }
 
-    if (!checkString({ str: param.title,minLength:1, maxLength: 100 })) {
+    if (!checkString({ str: param.title, minLength: 1, maxLength: 100 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "标题格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "标题格式错误",
         });
     }
 
-    if (!checkString({ str: param.frontcover,minLength:0, maxLength: 256 })) {
+    if (!checkString({ str: param.frontcover, minLength: 0, maxLength: 256 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "封面格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "封面格式错误",
         });
     }
 
-    if (!checkString({ str: param.location,minLength:0, maxLength: 256 })) {
+    if (!checkString({ str: param.location, minLength: 0, maxLength: 256 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "地理位置格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "地理位置格式错误",
         });
     }
 
-    if (!checkString({ str: param.play_url, minLength:0,maxLength: 512 })) {
+    if (!checkString({ str: param.play_url, minLength: 0, maxLength: 512 })) {
         return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_INVALID_PARAM, 
-            "message": "播放地址格式错误",  
+            "code": ENUMS.ErrCode.EC_INVALID_PARAM,
+            "message": "播放地址格式错误",
         });
     }
 
@@ -370,7 +400,7 @@ async function upload_ugc(req, res) {
         ugcItem['location'] = param.location;
         ugcItem['play_url'] = param.play_url;
         ugcItem['create_time'] = moment().format('YYYY-MM-DD HH:mm:ss');
-        results = await conn.queryAsync('insert into tb_ugc set ? on duplicate key update title=?,frontcover=?,location=?,play_url=?', [ugcItem,param.title,param.frontcover,param.location,param.play_url]);
+        results = await conn.queryAsync('insert into tb_ugc set ? on duplicate key update userid=?,title=?,frontcover=?,location=?,play_url=?', [ugcItem, param.userid, param.title, param.frontcover, param.location, param.play_url]);
 
     } catch (err) {
         console.error(err);
@@ -386,7 +416,7 @@ async function upload_ugc(req, res) {
 
 
     res.json({
-        "code": ENUMS.ErrCode.EC_OK, 
+        "code": ENUMS.ErrCode.EC_OK,
         "message": "OK"
     });
 
@@ -396,10 +426,22 @@ async function upload_ugc(req, res) {
 async function get_ugc_list(req, res) {
 
     let param = req.body;
-    let index = param.index ? parseInt(param.index) : 0;
-    let count = param.count ? parseInt(param.count) : 10;
+    let index = 1;
+    let count = 10;
 
- 
+    try {
+        index = param.index ? parseInt(param.index) : 1;
+        count = param.count ? parseInt(param.count) : 10;
+    } catch (err) {
+
+    }
+
+    if (index < 1) {
+        index = 1
+    }
+
+
+
     let total = 0;
     let list = [];
     let result = null;
@@ -411,8 +453,8 @@ async function get_ugc_list(req, res) {
         total = result[0].all_count;
 
         if (total != 0) {
-            let querySql = "select a.status,a.review_status,a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,a.create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid order by create_time desc limit ?,?";
-            list = await conn.queryAsync(querySql, [index, count]);
+            let querySql = "select a.status,a.review_status,a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid order by a.create_time desc limit ?,?";
+            list = await conn.queryAsync(querySql, [(index - 1) * count, count]);
         }
     } catch (err) {
         console.error(err);
@@ -442,10 +484,10 @@ async function get_vod_sign(req, res) {
         code: ENUMS.ErrCode.EC_OK,
         message: "OK",
         data: {
-            appid:gVodHelper.conf.appid,
-            SubAppId:gVodHelper.conf.SubAppId,
-            SecretId:gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)' })
+            appid: gVodHelper.conf.appid,
+            SubAppId: gVodHelper.conf.SubAppId,
+            SecretId: gVodHelper.conf.SecretId,
+            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)', vodSubAppId: gVodHelper.conf.SubAppId })
         }
     });
 }

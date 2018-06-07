@@ -18,10 +18,10 @@ async function updateBasicInfo(fileId) {
     let conn = null;
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
-        let data = await gVodHelper.getVideoInfo({ fileId, infoFilter: ['basicInfo'], extraOpt:{"proxy":""}});
+        let data = await gVodHelper.getVideoInfo({ fileId, infoFilter: ['basicInfo'], extraOpt: { "proxy": "" } });
         console.log(JSON.stringify(data));
-    
-        if(data.code!=0){
+
+        if (data.code != 0) {
             throw data;
         }
         let basicInfo = data.basicInfo;
@@ -37,7 +37,7 @@ async function updateBasicInfo(fileId) {
             throw 'no such fileID';
         }
         await conn.queryAsync('update tb_ugc set ? where file_id=?', [basicInfoItem, fileId]);
-     
+
     } finally {
         if (conn != null) {
             conn.release();
@@ -59,7 +59,7 @@ async function NewFileUploadHandler(taskCbMsg) {
     let conn = null;
     try {
         let fileId = param.fileId;
-        if(!fileId){
+        if (!fileId) {
             return;
         }
 
@@ -70,7 +70,7 @@ async function NewFileUploadHandler(taskCbMsg) {
         basicInfoItem['status'] = enums.ResourceStatus.READY;
         basicInfoItem['review_status'] = enums.ReviewStatus.NotReivew;
         let results = null;
-        results = await conn.queryAsync('insert into tb_ugc set ? on duplicate key update status=?,review_status=?', [basicInfoItem,basicInfoItem.status,enums.ReviewStatus.NotReivew]);
+        results = await conn.queryAsync('insert into tb_ugc set ? on duplicate key update status=?,review_status=?', [basicInfoItem, basicInfoItem.status, enums.ReviewStatus.NotReivew]);
         await updateBasicInfo(fileId);
 
     } catch (err) {
@@ -105,32 +105,42 @@ async function TranscodeCompleteHandler(taskCbMsg) {
  * 处理状态更新
  * @param {*} taskCbMsg 
  */
-async function ProcedureStateChangedHandler(taskCbMsg){
+async function ProcedureStateChangedHandler(taskCbMsg) {
     if (!taskCbMsg || taskCbMsg.eventType != enums.TaskCBEventType.ProcedureStateChanged) {
         throw { message: "can not process this task in ProcedureStateChangedHandler" };
     }
     let param = taskCbMsg.data;
-    
+
+    let conn = null;
     try {
-    
+
         let fileId = param.fileId;
-        if(!fileId){
+        if (!fileId) {
             return;
         }
-        
+        conn = await gDataBases["db_litvideo"].getConnection();
+
+
+        console.log(JSON.stringify(param));
+
         //判断是否涉黄
-        if(param.aiReview && param.aiReview.riskType.length!=0){
-            await conn.queryAsync('update t_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
+        if (param.aiReview && param.aiReview.riskType.length != 0) {
+            await conn.queryAsync('update tb_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
+            return;
+        } else {
+
+            console.log("非涉黄");
+            await conn.queryAsync('update tb_ugc set review_status=? where file_id=? and review_status=?', [enums.ReviewStatus.Normal, fileId, enums.ReviewStatus.NotReivew]);
             return;
         }
 
         //更新视频信息
         await updateBasicInfo(fileId);
-      
+
     } catch (err) {
         console.log(param);
         console.error(err);
-    } 
+    }
 }
 
 
@@ -147,7 +157,7 @@ taskHandlerMap[enums.TaskCBEventType.ProcedureStateChanged] = ProcedureStateChan
 
 function getTaskHandler(type) {
     let handler = taskHandlerMap[type];
-    if(!handler){
+    if (!handler) {
         handler = defaultTaskCbHandler;
     }
     return handler;

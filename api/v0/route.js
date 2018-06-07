@@ -16,6 +16,10 @@ router.all('/login', handler.login);
 
 router.use(middleware.veryfySign);
 
+router.all('/test_veryfy_sign',function(req,res){
+    res.json({code:0,message:"success to vierfy sign"});
+})
+
 router.all('/get_cos_sign', handler.get_cos_sign);
 
 router.all('/get_user_info', handler.get_user_info);
