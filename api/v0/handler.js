@@ -22,10 +22,12 @@ setInterval(async function () {
     } catch (err) {
 
         console.err(err);
-    } finally { }
-    if (conn != null) {
-        conn.release();
+    } finally { 
+        if (conn != null) {
+            conn.release();
+        }
     }
+  
 }, EXPIRE_TIME * 1000)
 
 

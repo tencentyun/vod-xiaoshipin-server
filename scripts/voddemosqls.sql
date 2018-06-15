@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS tb_ugc (
   userid varchar(50) NOT NULL,
   file_id varchar(150) NOT NULL,
   title varchar(128) DEFAULT NULL,
+  status tinyint(4) not NULL DEFAULT 0,
+  review_status tinyint(4) not NULL DEFAULT 0,
   frontcover varchar(255) DEFAULT NULL,
   location varchar(128) DEFAULT NULL,
   play_url varchar(255) DEFAULT NULL,

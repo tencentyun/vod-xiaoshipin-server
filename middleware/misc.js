@@ -80,10 +80,12 @@ async function veryfySign(req, res, next) {
     } catch (err) {
 
         console.error(err);
-    } finally { }
-    if (conn != null) {
-        conn.release();
+    } finally { 
+        if (conn != null) {
+            conn.release();
+        }
     }
+  
 
     next();
 }
