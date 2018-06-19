@@ -140,6 +140,10 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
     } catch (err) {
         console.log(param);
         console.error(err);
+    }finally{
+        if(conn != null){
+            conn.release();
+        }
     }
 }
 
