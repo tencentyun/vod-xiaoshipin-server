@@ -270,6 +270,10 @@ function checkString({
         return false;
     }
 
+    if(!str){
+        str = ""
+    }
+
     if (str.length > maxLength || str.length < minLength) {
         return false;
     }
