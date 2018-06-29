@@ -139,6 +139,13 @@ async function startServer(){
     initilizeApplication();
     initMiddleware();
 
+    //开启可靠回调
+    if (GLOBAL_CONFIG.server.reliablecb) {
+        const tasks = require('./tasks/reliable_cb_task');
+        tasks.runReliableCbTask();
+    }
+
+
     app.set('host', process.env.IP || GLOBAL_CONFIG.server.ip);
     app.set('port', process.env.PORT || GLOBAL_CONFIG.server.port);
     const server = app.listen(app.get('port'), app.get('host'), function() {
