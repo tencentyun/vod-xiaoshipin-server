@@ -16,10 +16,26 @@
 ## 环境准备
 
 ### 安装Nodejs
+
+
+1. 创建安装目录
 ```
-sudo apt-get install nodejs-legacy nodejs
-sudo apt-get install npm
-sudo node -v
+
+cd /usr/local
+mkdir software
+cd software
+```
+2. 下载最新版本 Nodejs 安装包
+
+```
+sudo wget https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
+tar -xvf node-v8.11.3-linux-x64.tar
+cd node-v8.11.3-linux-x64
+```
+3. 将 node 和 npm 工具设置为全局
+```
+sudo ln /usr/software/node-v8.11.3-linux-x64/bin/node /usr/local/bin/node
+sudo ln /usr/software/node-v8.11.3-linux-x64/bin/npm /usr/local/bin/npm
 ```
 
 ### 安装Mysql (mariadb) 
@@ -27,6 +43,7 @@ sudo node -v
 sudo apt update
 sudo apt install mariadb-server
 sudo mysql --version
+sudo service mysql start
 ```
 ### 初始化数据库
 
