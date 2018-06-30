@@ -16,11 +16,9 @@
 ## 环境准备
 
 ### 安装Nodejs
-
-
+注意：nodejs 版本要求高于8.x
 1. 创建安装目录
 ```
-
 cd /usr/local
 mkdir software
 cd software
@@ -37,6 +35,7 @@ cd node-v8.11.3-linux-x64
 sudo ln /usr/software/node-v8.11.3-linux-x64/bin/node /usr/local/bin/node
 sudo ln /usr/software/node-v8.11.3-linux-x64/bin/npm /usr/local/bin/npm
 ```
+
 
 ### 安装Mysql (mariadb) 
 ```
