@@ -7,19 +7,21 @@ const bodyParser = require('body-parser');
 const compress = require('compression');
 const MySQLHelper = require('./utils/mysql_helper');
 const VodHelper = require('./utils/vod_helper').VodHelper;
+const getTaskHandler = require('./routes/taskcbHandlers').getTaskHandler;
 const app = express();
 const moment = require('moment');
+const taskmsg = require('./taskmsg.js');
 app.disable('x-powered-by');
 if (!process.env.NODE_ENV) {
-    process.env.NODE_ENV = 'development';
+	process.env.NODE_ENV = 'development';
 }
 
 
 
 //配置文件加载
 function loadConfig(){
-    const fs = require('fs');
-    return JSON.parse(fs.readFileSync('./conf/localconfig.json'));
+	const fs = require('fs');
+	return JSON.parse(fs.readFileSync('./conf/localconfig.json'));
 }
 
 /**
@@ -27,129 +29,158 @@ function loadConfig(){
  */
 function initilizeApplication(){
 
-    //封装日志输出
-    console.log = (function (oriLogFunc) {
-       
-        return function (str) {
-            try {
-                throw new Error();
-            } catch (e) {
-             
-                let date = moment().format('YYYY-MM-DD HH:mm:ss');
-                var loc= e.stack.replace(/Error\n/).split(/\n/)[1].replace(/^\s+|\s+$/, "");
-                oriLogFunc.call(console, `${date} | DEBUG | ${loc} | ${str}`);
-            }
-           
-        }
-    })(console.log);
+	//封装日志输出
+	console.log = (function (oriLogFunc) {
 
-    console.error = (function (oriLogFunc) {
-        return function (str) {
+		return function (str) {
+			try {
+				throw new Error();
+			} catch (e) {
 
-            try {
-                throw new Error();
-            } catch (e) {
-                let date = moment().format('YYYY-MM-DD HH:mm:ss');
-                var loc= e.stack.replace(/Error\n/).split(/\n/)[1].replace(/^\s+|\s+$/, "");
-                oriLogFunc.call(console, `${date} | ERROR | ${loc} | ${str}`);
-            }
-        }
-    })(console.error);
+				let date = moment().format('YYYY-MM-DD HH:mm:ss');
+				var loc= e.stack.replace(/Error\n/).split(/\n/)[1].replace(/^\s+|\s+$/, "");
+				oriLogFunc.call(console, `${date} | DEBUG | ${loc} | ${str}`);
+			}
 
-    global.gDataBases = {
-        "db_litvideo":new MySQLHelper(GLOBAL_CONFIG.dbconfig)
-    };
+		}
+	})(console.log);
 
-    global.gVodHelper = new VodHelper(GLOBAL_CONFIG.tencentyunaccout);
+	console.error = (function (oriLogFunc) {
+		return function (str) {
+
+			try {
+				throw new Error();
+			} catch (e) {
+				let date = moment().format('YYYY-MM-DD HH:mm:ss');
+				var loc= e.stack.replace(/Error\n/).split(/\n/)[1].replace(/^\s+|\s+$/, "");
+				oriLogFunc.call(console, `${date} | ERROR | ${loc} | ${str}`);
+			}
+		}
+	})(console.error);
+
+	global.gDataBases = {
+		"db_litvideo":new MySQLHelper(GLOBAL_CONFIG.dbconfig)
+	};
+
+	global.gVodHelper = new VodHelper(GLOBAL_CONFIG.tencentyunaccout);
 }
 
 /**
  * 注册中间件
  */
 function initMiddleware() {
-   
-    app.use(compress());
 
-    //获取原始post值用来计算校验
-    app.use(function(req, res, next){
-        var reqData = [];
-        var size = 0;
-        req.on('data', function (data) {
-           reqData.push(data);
-            size += data.length;
-        });
-        req.on('end', function () {
-            req.reqData = Buffer.concat(reqData, size);
-        });
-        next();
-    });
+	app.use(compress());
 
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser());
-    app.use(express.static(path.join(__dirname, 'public')));
+	//获取原始post值用来计算校验
+	app.use(function(req, res, next){
+		var reqData = [];
+		var size = 0;
+		req.on('data', function (data) {
+			reqData.push(data);
+			size += data.length;
+		});
+		req.on('end', function () {
+			req.reqData = Buffer.concat(reqData, size);
+		});
+		next();
+	});
 
-
-    app.use(function(req,res,next){
-        console.log(req.url);
-        next();
-    });
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({ extended: false }));
+	app.use(cookieParser());
+	app.use(express.static(path.join(__dirname, 'public')));
 
 
-    if (!GLOBAL_CONFIG.server.reliablecb) {
-        //回调路由
-        app.use('/', require('./routes/taskcb'));
-    }
-    //功能接口路由
-    app.use('/', require('./api/v0/route'));
-   
+	app.use(function(req,res,next){
+		console.log(req.url);
+		next();
+	});
 
-    // catch 404 and forward to error handler
-    app.use(function (req, res, next) {
 
-        const err = new Error(`${req.url} Not Found`);
-        err.status = 404;
-        next(err);
-    });
+	if (!GLOBAL_CONFIG.server.reliablecb) {
+		//回调路由
+		app.use('/', require('./routes/taskcb'));
+	}
+	//功能接口路由
+	app.use('/review', require('./api/v0/review/route'));
+	app.use('/', require('./api/v0/route'));
 
-    // error handlers
-    if (app.get('env') === 'development') {
-        // development error handler
-        // will print stacktrace
-        app.use(function (err, req, res, next) {
-            console.error(err);
-            res.status(err.status || 500);
-            res.send(err.message);
-        });
-    } else {
-        // production error handler
-        // no stacktraces leaked to user
-        app.use(function (err, req, res, next) {
-            console.error(err);
-            res.status(err.status || 500);
-            res.send(err.message);
-        });
-    }
+
+	// catch 404 and forward to error handler
+	app.use(function (req, res, next) {
+
+		const err = new Error(`${req.url} Not Found`);
+		err.status = 404;
+		next(err);
+	});
+
+	// error handlers
+	if (app.get('env') === 'development') {
+		// development error handler
+		// will print stacktrace
+		app.use(function (err, req, res, next) {
+			console.error(err);
+			res.status(err.status || 500);
+			res.send(err.message);
+		});
+	} else {
+		// production error handler
+		// no stacktraces leaked to user
+		app.use(function (err, req, res, next) {
+			console.error(err);
+			res.status(err.status || 500);
+			res.send(err.message);
+		});
+	}
 }
 
+async function runReliableCbTask(){
+	try{
+		let result = await gVodHelper.pullEvent({extraOpt:{"proxy":GLOBAL_CONFIG.server.proxy}});
+		if(result.code==4000){
+			return;
+		}
+		if(result.code!=0){
+			console.error("pullEvent failed:"+JSON.stringify(result));
+			return;
+		}
+		let msgHandles = [];
+		for(let event of result.eventList){   
+			console.log(event);
+			const taskCbhandler = getTaskHandler(event.eventContent.eventType);
+			try {
+				await taskCbhandler(event.eventContent);
+			} catch (err) {
+				console.error(err);
+			}finally{
+				msgHandles.push(event.msgHandle);
+			}
+		}
+		await gVodHelper.comfireEvent({msgHandles,extraOpt:{"proxy":GLOBAL_CONFIG.server.proxy}});
+	}catch(error){
+		console.error(error);
+	}finally{
+		setTimeout(runReliableCbTask,GLOBAL_CONFIG.server.reliablecbtimeout);
+	}
+}
 async function startServer(){
-    global.GLOBAL_CONFIG = loadConfig();
+	global.GLOBAL_CONFIG = loadConfig();
 
 
-    initilizeApplication();
-    initMiddleware();
+	initilizeApplication();
+	initMiddleware();
 
-    //开启可靠回调
-    if (GLOBAL_CONFIG.server.reliablecb) {
-        const tasks = require('./tasks/reliable_cb_task');
-        tasks.runReliableCbTask();
-    }
-
-
-    app.set('host', process.env.IP || GLOBAL_CONFIG.server.ip);
-    app.set('port', process.env.PORT || GLOBAL_CONFIG.server.port);
-    const server = app.listen(app.get('port'), app.get('host'), function() {
-        console.log('Express server listening on port', server.address().port);
-    });
+	app.set('host', process.env.IP || GLOBAL_CONFIG.server.ip);
+	app.set('port', process.env.PORT || GLOBAL_CONFIG.server.port);
+	const server = app.listen(app.get('port'), app.get('host'), function() {
+		console.log('Express server listening on port', server.address().port);
+	});
 }
+
 startServer();
+runReliableCbTask();
+//handler = getTaskHandler("ProcedureStateChanged")
+//handler(taskmsg.taskmsg);
+
+

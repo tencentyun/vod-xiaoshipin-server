@@ -14,6 +14,8 @@ var ENUM = {
         EC_USER_EXIST: 612,
         EC_USER_NOT_EXIST: 620,
         EC_USER_PWD_ERROR: 621,
+        EC_TASK_EXIST: 623,
+        EC_TASK_EXPIRE: 624,
         //这几个错误码是给后台回调用的
         EC_SYSTEM_INVALID_JSON_FORMAT: 4001,
         EC_SYSTEM_INVALID_PARA: 4002,
@@ -70,7 +72,11 @@ var ENUM = {
         NotReivew:0,
         Normal:1,
         Porn:2,
-    }
+    },
+	ReviewMessage:{
+		Porn : "porn",
+		Pass : "pass",
+	}
 
 };
 

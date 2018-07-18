@@ -92,3 +92,22 @@ CREATE TABLE IF NOT EXISTS tb_token(
   KEY(userid),
   KEY(expire_time)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS tb_queue(
+  task_id VARCHAR(150) NOT NULL,
+  file_id varchar(150) NOT NULL,
+  owner   VARCHAR(50),
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  mark_time timestamp DEFAULT '1971-01-01 00:00:00',
+  review_data longtext,
+  PRIMARY KEY(task_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS tb_review_record(
+  task_id VARCHAR(150) NOT NULL,
+  file_id varchar(150) NOT NULL,
+  reviewer_id   VARCHAR(50) NOT NULL,
+  review_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  review_status VARCHAR(50) NOT NULL,
+  PRIMARY KEY(task_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
