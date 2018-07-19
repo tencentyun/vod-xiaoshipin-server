@@ -170,6 +170,7 @@ npm install            //安装项目所需依赖
 
 在腾讯云点播控制台，【视频处理设置】下【回调配置中】设置回调模式为可靠回调，该配置可能需要 10 分钟才能生效
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
+
 在工程根目录下启动服务
 ```
 npm start
