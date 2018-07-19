@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
   review_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   review_status VARCHAR(50) NOT NULL,
   PRIMARY KEY(task_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;'')
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
 
