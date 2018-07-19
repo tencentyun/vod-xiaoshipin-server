@@ -360,8 +360,8 @@ function CpiAsyncRequest(params,opts={},extras={});
         EC_USER_EXIST: 612,
         EC_USER_NOT_EXIST: 620,
         EC_USER_PWD_ERROR: 621,
-		EC_TASK_EXIST: 623, //没有任务了
-		EC_TASK_EXPIRE: 624,//任务过期
+        EC_TASK_EXIST: 623, //没有任务了
+        EC_TASK_EXPIRE: 624,//任务过期
         //这几个错误码是给后台回调用的
         EC_SYSTEM_INVALID_JSON_FORMAT: 4001,
         EC_SYSTEM_INVALID_PARA: 4002,
@@ -816,6 +816,7 @@ POST
 #### 请求地址
 /review
 #### 参数说明
+
 参数名| 必填|类型|描述|示例
 ---- | ---
 tatus|是|	string	|pass/porn
@@ -839,9 +840,11 @@ POST
 #### 请求地址
 /review/get_next_file
 #### 参数说明
+
 参数名| 必填|类型|描述|示例
 ---- | ---
 reviewer_id	|是|string|	审核人，默认admin01
+
 #### 接口应答
 ```
 {
