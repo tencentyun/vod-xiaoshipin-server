@@ -817,12 +817,12 @@ POST
 /review
 #### 参数说明
 
-参数名| 必填|类型|描述|示例
----- | ---
-tatus|是|	string	|pass/porn
-task_id	|是|string|	任务id
-file_id	|是|string|	文件id	
-reviewer_id	|是|string|	审核人，默认admin01
+参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
+:-: | :-: | :-: | :-: | :-: | :-: 
+status | string | 是 |pass/porn |   |   
+task_id | string | 是| 任务id |  |   
+file_id | string | 是| 视频id |  |    
+reviewer_id | string | 是| 审核人 |  | admin01 
 
 #### 接口应答
 ```
@@ -841,9 +841,9 @@ POST
 /review/get_next_file
 #### 参数说明
 
-参数名| 必填|类型|描述|示例
----- | ---
-reviewer_id	|是|string|	审核人，默认admin01
+参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
+:-: | :-: | :-: | :-: | :-: | :-: 
+reviewer_id | string | 是 |审核人 |   | admin01   
 
 #### 接口应答
 ```
