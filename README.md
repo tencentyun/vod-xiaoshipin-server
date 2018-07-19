@@ -122,7 +122,6 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 # 快速开始
 
 进入工作目录，克隆项目文件
-
 ```
  git clone https://github.com/tencentyun/vod-short-video-server-demo.git
 ```
