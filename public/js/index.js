@@ -13,11 +13,6 @@ $(function() {
         $('#not_pass_id').on('click', function() {
             sendReview('porn');
         });
-        $('#next_id').on('click', function() {
-            getFileInfo(function(res) {
-                render(res);
-            });
-        });
         $('#pic_container_id').on('click', function(evt) {
             var target = $(evt.target);
             var role = target.attr('data-role');
@@ -48,6 +43,9 @@ $(function() {
                 var code = res.code;
                 if (code == 200) {
                     alert('任务成功');
+                    getFileInfo(function(data) {
+                        render(data);
+                    });
                 } else if (code == 624) {
                     alert('任务失效');
                 } else {
@@ -102,9 +100,9 @@ $(function() {
                 for (var j = 0; j < item.output.segments.length; j++) {
                     var segmentItem = item.output.segments[j];
                     if (segmentItem.confidence >= 70) {
-                        picStr += '<div class="pic red"><img data-role="img" src="' + escapeHTML(segmentItem.url) + '" data-start="' + escapeHTML(segmentItem.startTimeOffset) + '" data-end="' + escapeHTML(segmentItem.endTimeOffset) + '" data-confidence="' + escapeHTML(segmentItem.confidence) + '" /></div>'
+                        picStr += '<div class="pic red"><img data-role="img" src="' + escapeHTML(segmentItem.url) + '" data-start="' + escapeHTML(segmentItem.startTimeOffset) + '" /></div>'
                     } else {
-                        picStr += '<div class="pic"><img data-role="img" src="' + escapeHTML(segmentItem.url) + '" data-start="' + escapeHTML(segmentItem.startTimeOffset) + '" data-end="' + escapeHTML(segmentItem.endTimeOffset) + '" data-confidence="' + escapeHTML(segmentItem.confidence) + '" /></div>'
+                        picStr += '<div class="pic"><img data-role="img" src="' + escapeHTML(segmentItem.url) + '" data-start="' + escapeHTML(segmentItem.startTimeOffset) + '" /></div>'
                     }
                 }
                 break;
