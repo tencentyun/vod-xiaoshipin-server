@@ -188,7 +188,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频就行测试
 当上传的视频中，存在审核结果为“review”或者“block”的资源时，打开浏览器访问（可能需要外网权限）http://ip:port/index.html 进行人工视频审核。页面如图：
 
-![鉴黄墙](https://main.qcloudimg.com/raw/c1133855eebb77b09d6560d39bd75a13.png)
+![鉴黄墙](https://main.qcloudimg.com/raw/0e7f0d7b6d98b6bd600d107dcc4da5f1.png)
 
 页面左侧显示视频id和title，以及触犯规则的视频截图，截图confidence超过70会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
 
@@ -215,7 +215,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 鉴黄墙：提供视频审核功能，对机审无法判断的视频进行人工审核
 
-![服务架构图](https://main.qcloudimg.com/raw/40dcfa72c1bea57c8a1f80adac8d9fdc.png)
+![服务架构图](https://main.qcloudimg.com/raw/4b95b6aa207948fc3a36ec9cb0f4ee8e.png)
 
 ### 点播消息回调
 
