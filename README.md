@@ -216,7 +216,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 鉴黄墙：提供视频审核功能，对机审无法判断的视频进行人工审核
 
-![服务架构图](https://main.qcloudimg.com/raw/4b95b6aa207948fc3a36ec9cb0f4ee8e.png)
+![服务架构图](https://main.qcloudimg.com/raw/e641f8c044b943855936fa6f591d4682.png)
 
 ### 点播消息回调
 
