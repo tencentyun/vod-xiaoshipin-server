@@ -187,7 +187,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 ```
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频就行测试
 当上传的视频中，存在审核结果为“review”或者“block”的资源时，打开浏览器访问（可能需要外网权限）http://ip:port/index.html 进行人工视频审核。页面如图：
-
+![鉴黄墙](https://main.qcloudimg.com/raw/c1133855eebb77b09d6560d39bd75a13.png)
 页面左侧显示视频id和title，以及触犯规则的视频截图，截图confidence超过70会标红，右侧支持视频播放。点击相应截图，视频会从指定位置开始播放。 
 视频下方是审核通过/屏蔽按钮，审核人点击任一审核按钮后，可获取下一条待审视频。 
 注意事项：
@@ -207,7 +207,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 消息回调：处理当 vod 完成视频上传，视频转码等功能的回调请求
 帐号管理：提供帐号注册、登录以及用户数据上传，提供登录信息校验
 鉴黄墙：提供视频审核功能，对机审无法判断的视频进行人工审核
-![服务架构图](https://main.qcloudimg.com/raw/840212956ecc1b296bb1b93ea0bd7f6b.png)
+![服务架构图](https://main.qcloudimg.com/raw/40dcfa72c1bea57c8a1f80adac8d9fdc.png)
 
 ### 点播消息回调
 
@@ -798,16 +798,16 @@ message| string | 返回消息 |
     	"message": "OK"
     }
 ```
-##鉴黄墙
-####接口名称
+## 鉴黄墙
+#### 接口名称
 review
-####功能说明
+#### 功能说明
 管理员提交审核结果
-####请求方式
+#### 请求方式
 POST
-####请求地址
+#### 请求地址
 /review
-####参数说明
+#### 参数说明
 参数名| 必填|类型|描述|示例
 ---- | ---
 tatus|是|	string	|pass/porn
@@ -815,26 +815,26 @@ task_id	|是|string|	任务id
 file_id	|是|string|	文件id	
 reviewer_id	|是|string|	审核人，默认admin01
 
-####接口应答
+#### 接口应答
 ```
     {
         "code" : 200, //任务失效 624
         "message": ""
     }
 ```
-####接口名称
+#### 接口名称
 get_next_file
-####功能说明
+#### 功能说明
 获取下一个待审核视频信息，包括视频基本信息，违规视频段，截图，起始时间
-####请求方式
+#### 请求方式
 POST
-####请求地址
+#### 请求地址
 /review/get_next_file
-####参数说明
+#### 参数说明
 参数名| 必填|类型|描述|示例
 ---- | ---
 reviewer_id	|是|string|	审核人，默认admin01
-####接口应答
+#### 接口应答
 ```
 {
 	"code": 200,  //没有任务了，返回623
