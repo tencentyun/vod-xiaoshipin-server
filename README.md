@@ -11,7 +11,7 @@
 
 ## 帐号申请
  1. 申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid,SecretId,SecretKey
- 2. 设置点播平台回调配置:部署域名+/taskcb,参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
+ 2. 设置点播平台回调配置：可靠回调,参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
 
 ## 环境准备
 
@@ -168,7 +168,7 @@ npm install            //安装项目所需依赖
 
 ## 启动服务
 
-在腾讯云点播控制台，【视频处理设置】下【回调配置中】设置回调模式为可靠回调，该配置可能需要 10 分钟才能生效
+在腾讯云点播控制台，【视频处理设置】下【回调配置中】设置回调模式为可靠回调，【事件回调配置】项全部选中，该配置可能需要 10 分钟才能生效
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
 
 在工程根目录下启动服务
@@ -241,7 +241,7 @@ async function get_vod_sign(req, res) {
             appid: gVodHelper.conf.appid,
             SubAppId: gVodHelper.conf.SubAppId,
             SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)', vodSubAppId: gVodHelper.conf.SubAppId })
+            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
         }
     });
 }
