@@ -19,22 +19,10 @@
 注意：nodejs 版本要求高于8.x
 1. 创建安装目录
 ```
-cd /usr/local
-mkdir software
-cd software
+curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
-2. 下载最新版本 Nodejs 安装包
 
-```
-sudo wget https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
-tar -xvf node-v8.11.3-linux-x64.tar
-cd node-v8.11.3-linux-x64
-```
-3. 将 node 和 npm 工具设置为全局
-```
-sudo ln /usr/software/node-v8.11.3-linux-x64/bin/node /usr/local/bin/node
-sudo ln /usr/software/node-v8.11.3-linux-x64/bin/npm /usr/local/bin/npm
-```
 
 
 ### 安装Mysql (mariadb) 
@@ -48,7 +36,7 @@ sudo service mysql start
 
 1. 在终端使用 root 帐号登录 Mysql
 ```
-mysql -u root -p
+sudo mysql -u root -p
 ```
 2. 创建小视频数据库用户 litvideo
 
@@ -107,7 +95,7 @@ CREATE TABLE IF NOT EXISTS tb_token(
 进入工作目录，克隆项目文件
 
 ```
- git clone https://github.com/tencentyun/vod-short-video-server-demo.git
+ git clone https://github.com/tencentyun/vod-xiaoshipin-server.git
 ```
    
 在工作目录下，安装项目所需依赖
