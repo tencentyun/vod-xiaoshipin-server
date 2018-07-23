@@ -223,9 +223,27 @@ async function initCosBucket() {
     }
 }
 
+function checkConfig(config){
+    if(!config){
+        throw {message:"配置文件加载失败，检查是否存在配置文件"}
+    }
+    if(!config.tencentyunaccount){
+        throw {message:"缺失腾讯云帐号配置"}
+    }
+
+    if(!config.tencentyunaccount.appid || !!config.tencentyunaccount.SecretId || !!config.tencentyunaccount.SecretKey){
+        throw {message:"腾讯云帐号配置缺失，检查 appid，secretId、secreteKey 是否配置"}
+    }
+}
 async function startServer() {
     global.GLOBAL_CONFIG = loadConfig();
+    try{
+        checkConfig(global.GLOBAL_CONFIG)
+    }catch(err){
+        console.error("localconfig error :"+JSON.stringify(err));
+        process.exit(0);
 
+    }
 
     initilizeApplication();
     initMiddleware();
