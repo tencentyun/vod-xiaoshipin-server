@@ -14,7 +14,9 @@ let VodHelper = require(APP_BASE_PATH + 'utils/vod_helper').VodHelper;
 
 const EXPIRE_TIME = 24 * 60 * 60;
 
-setInterval(async function () {
+
+//淘汰过期登录
+async function siftToken(){
     let conn = null;
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
@@ -27,8 +29,33 @@ setInterval(async function () {
             conn.release();
         }
     }
+}
+
+//处理超时的审核请求
+async function handleTimeoutUgc() {
+    let conn = null;
+    try {
+        conn = await gDataBases["db_litvideo"].getConnection();
+        let result = await conn.queryAsync("select file_id from tb_ugc where review_status=0 and TIMESTAMPDIFF(HOUR,create_time,now()) > 1 ");
+        //TODO 处理鉴黄超时的视频
+
+    } catch (err) {
+
+        console.err(err);
+    } finally {
+        if (conn != null) {
+            conn.release();
+        }
+    }
+
+}
+
+setInterval(async function () {
+    siftToken()
+    handleTimeoutUgc()
+
   
-}, EXPIRE_TIME * 1000)
+}, 60 * 60 * 1000)
 
 
 
@@ -190,10 +217,10 @@ async function login(req, res) {
                 SecretId: gVodHelper.conf.SecretId,
             },
             "cos_info": {
-                "Bucket": GLOBAL_CONFIG.cos.bucket,           //cos bucket名
-                "Region": GLOBAL_CONFIG.cos.region,           //cos bucket所在地域
-                "Appid": GLOBAL_CONFIG.cos.appid,           //cos appid
-                "SecretId": GLOBAL_CONFIG.cos.SecretId          //cos secretid
+                "Bucket": GLOBAL_CONFIG.tencentyunaccount.bucket,           //cos bucket名
+                "Region": GLOBAL_CONFIG.tencentyunaccount.region,           //cos bucket所在地域
+                "Appid": GLOBAL_CONFIG.tencentyunaccount.appid,           //cos appid
+                "SecretId": GLOBAL_CONFIG.tencentyunaccount.SecretId          //cos secretid
             },
             "roomservice_sign": {       //登录roomservice的签名
                 "sdkAppID": 123456,     // 云通信 sdkappid
@@ -493,7 +520,7 @@ async function get_vod_sign(req, res) {
             appid: gVodHelper.conf.appid,
             SubAppId: gVodHelper.conf.SubAppId,
             SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)', vodSubAppId: gVodHelper.conf.SubAppId })
+            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)' })
         }
     });
 }
@@ -509,7 +536,7 @@ async function get_cos_sign(req, res) {
         return q_key_time;
     }
     const keyTime = getQKeyTime(EXPIRE_TIME);
-    const signKey = crypto.createHmac('sha1', GLOBAL_CONFIG.tencentyunaccout.SecretKey).update(keyTime).digest('hex');
+    const signKey = crypto.createHmac('sha1', GLOBAL_CONFIG.tencentyunaccount.SecretKey).update(keyTime).digest('hex');
 
     res.json({
         "code": ENUMS.ErrCode.EC_OK,

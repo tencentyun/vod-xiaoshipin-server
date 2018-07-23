@@ -17,7 +17,6 @@
 
 ### 安装Nodejs
 注意：nodejs 版本要求高于8.x
-1. 创建安装目录
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -115,18 +114,13 @@ npm install            //安装项目所需依赖
             "supportBigNumbers": true,      //保持默认
             "connectionLimit":10            //保持默认
         },
-        "tencentyunaccout":{                //腾讯运云帐号配置
-            "appid":"",                     //腾讯云 Appid
-            "SubAppId":"",                  //腾讯云点播子帐号，默认不使用，保持为空
-            "SecretId": "",                 //腾讯云 SecretId
-            "SecretKey": ""                 //腾讯云 SecretKey
-        },
-        "cos":{                             // COS 配置，用于保存图片数据
-            "appid":"",                     //腾讯云 Appid
-            "bucket":"xiaoshipin",          //使用 bucket
-            "region":"ap-guangzhou",        // bucket 所在地域
-            "SecretId": "",                 //腾讯云 SecretId
-            "SecretKey": ""                 //腾讯云 SecretKey
+        "tencentyunaccount":{                //腾讯运云帐号配置
+            "appid":"",                      //腾讯云 Appid
+            "SubAppId":"",                   //腾讯云点播子帐号，默认不使用，保持为空
+            "SecretId": "",                  //腾讯云 SecretId
+            "SecretKey": "",                 //腾讯云 SecretKey
+            "bucket":"xiaoshipin",           // COS 存储bucket
+            "region":"ap-guangzhou"          // COS 存储地域
         },
         "server":{                        
             "ip":"0.0.0.0",                 //服务启动 IP ，保持默认

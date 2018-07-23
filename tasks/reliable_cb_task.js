@@ -3,7 +3,7 @@
  */
 
 const VodHelper = require('../utils/vod_helper').VodHelper;
-const vodHelper = new VodHelper(GLOBAL_CONFIG.tencentyunaccout);
+const vodHelper = new VodHelper(GLOBAL_CONFIG.tencentyunaccount);
 const getTaskHandler = require('../routes/taskcbHandlers').getTaskHandler;
 
 const extraOpt = {};
