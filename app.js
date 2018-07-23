@@ -231,7 +231,7 @@ function checkConfig(config){
         throw {message:"缺失腾讯云帐号配置"}
     }
 
-    if(!config.tencentyunaccount.appid || !!config.tencentyunaccount.SecretId || !!config.tencentyunaccount.SecretKey){
+    if(!config.tencentyunaccount.appid || !config.tencentyunaccount.SecretId || !config.tencentyunaccount.SecretKey){
         throw {message:"腾讯云帐号配置缺失，检查 appid，secretId、secreteKey 是否配置"}
     }
 }
