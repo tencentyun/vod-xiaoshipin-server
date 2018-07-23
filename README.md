@@ -3,15 +3,19 @@
 
 # 概述
 
-本项目为腾讯云小视频 APP + 鉴黄墙后台服务，采用 Nodejs 和 Mysql搭建，提供了腾讯云点播平台视频上传，回调处理，媒资管理等功能，以及网页端人工审核视频功能的演示。用户可以下载本项目源码搭建自己的小视频后台服务。
+本项目为腾讯云小视频 APP 后台服务，采用 Nodejs 和 Mysql搭建，提供了如下功能的演示：
+1. 腾讯云点播平台视频上传
+2. 消息回调处理
+3. 媒资管理
+4. 人工视频审核
+用户可以下载本项目源码搭建自己的小视频后台服务。
 
 
 
 # 准备
 
 ## 帐号申请
- 1. 申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid,SecretId,SecretKey
- 2. 设置点播平台回调配置：可靠回调,参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
+申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid,SecretId,SecretKey
 
 ## 环境准备
 
@@ -118,6 +122,7 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
+ 2. 设置点播平台回调配置：可靠回调,参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
 
 # 快速开始
 
