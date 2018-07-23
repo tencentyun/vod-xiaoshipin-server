@@ -50,8 +50,10 @@ class VodHelper{
         var expired = current + timeStamp;  
 
         var arg_list = {
+<<<<<<< HEAD
    
-            vodSubAppId,
+=======
+>>>>>>> master
             secretId: this.conf.SecretId,
             currentTimeStamp: current,
             expireTime: expired,
@@ -62,8 +64,10 @@ class VodHelper{
             oneTimeValid,
             sourceContext
         }
+        if(this.conf.SubAppId){
+            arg_list["vodSubAppId"] = this.conf.SubAppId
+        }
       
-
         var orignal = querystring.stringify(arg_list);
         var orignal_buffer = new Buffer(orignal, "utf8");
         var hmac = crypto.createHmac("sha1", this.conf.SecretKey);
@@ -82,21 +86,14 @@ class VodHelper{
             Action: 'GetVideoInfo',
             fileId
         }
-
         if(this.conf.SubAppId){
             defaultData.SubAppId = this.conf.SubAppId;
         }
-
-    
-        
         for(let i=0;i<infoFilter.length;i++){
             defaultData[`infoFilter.${i}`] = infoFilter[i];
         }
-        console.log(defaultData);
-
         return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
     }
-
      /**
      * 请求点播平台未消费的事件通知，详细信息见：https://cloud.tencent.com/document/product/266/7829
      */

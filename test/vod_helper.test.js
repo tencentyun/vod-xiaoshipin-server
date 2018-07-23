@@ -10,7 +10,7 @@ before(async function () {
     //配置文件加载
     const fs = require('fs');
     const config = JSON.parse(fs.readFileSync('./conf/localconfig.json'));
-    vodHelper = new VodHelper(config.tencentyunaccout);
+    vodHelper = new VodHelper(config.tencentyunaccount);
 });
 
 describe('VodHelper test', function () {
