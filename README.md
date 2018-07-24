@@ -3,25 +3,26 @@
 
 # 概述
 
-本项目为腾讯云小视频 APP 后台服务，采用 Nodejs 和 Mysql搭建，提供了如下功能的演示：
+本项目为腾讯云小视频 APP 后台服务，采用 Nodejs 和 Mysql 搭建，提供了如下功能的演示：
 1. 腾讯云点播平台视频上传
 2. 消息回调处理
 3. 媒资管理
-4. 人工视频审核
+4. 视频内容审核
+5. 人工视频审核
 
-用户可以下载本项目源码搭建自己的小视频后台服务。
+其中视频内容审核基于腾讯云强大的 AI 能力，高效识别视频中的违规内容，帮助客户降低色情、暴恐、涉政等违规风险。详见[视频内容审核综述](https://cloud.tencent.com/document/product/266/17914)。用户可以下载本项目源码搭建自己的小视频后台服务。
 
 
 
 # 准备
 
 ## 帐号申请
-申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid,SecretId,SecretKey
+申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid，SecretId，SecretKey。
 
 ## 环境准备
 
-### 安装Nodejs
-注意：nodejs 版本要求高于8.x
+### 安装 Nodejs
+注意：nodejs 版本要求高于 8.x
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -29,7 +30,7 @@ sudo apt-get install -y nodejs
 
 
 
-### 安装Mysql (mariadb) 
+### 安装 Mysql (mariadb) 
 ```
 sudo apt update
 sudo apt install mariadb-server
@@ -55,7 +56,7 @@ create database db_litvideo default charset utf8 collate utf8_general_ci;
 grant all privileges on `db_litvideo`.* to 'litvideo'@'%' identified by 'litvideo';
 ```
 
-4. 使用litvideo，新建所需要的数据库
+4. 使用 litvideo，新建所需要的数据库
 ```
 use db_litvideo;
 CREATE TABLE IF NOT EXISTS tb_account(
@@ -91,6 +92,7 @@ CREATE TABLE IF NOT EXISTS tb_token(
   KEY(userid),
   KEY(expire_time)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS tb_queue(
   task_id VARCHAR(150) NOT NULL,
   file_id VARCHAR(150) NOT NULL,
@@ -100,6 +102,7 @@ CREATE TABLE IF NOT EXISTS tb_queue(
   review_data longtext,
   PRIMARY KEY(task_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS tb_review_record(
   task_id VARCHAR(150) NOT NULL,
   file_id VARCHAR(150) NOT NULL,
@@ -118,7 +121,7 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 ### 配置视频内容审核模板
 
 本项目对视频发起鉴黄审核，在派发给客户端上传签名时带上了鉴黄模版，处理回调信息时根据鉴黄结果修改视频审核状态。
-上传签名计算由api/v0/handler.js实现，具体如下:
+上传签名计算由 api/v0/handler.js 实现，具体如下:
 
 ```
 async function get_vod_sign(req, res) {
@@ -147,8 +150,8 @@ async function get_vod_sign(req, res) {
 在工作目录下，安装项目所需依赖
 ```
 npm install            //安装项目所需依赖
-```
-在conf文件夹下，复制config_template.json文件并命名为localconfig.json文件，修改腾讯云API密钥、数据库参数配置，以及 COS 存储配置。
+``` 
+在 conf 文件夹下，复制 config_template.json 文件并命名为 localconfig.json 文件，修改腾讯云 API 密钥、数据库参数配置，以及 COS 存储配置。
 
 ```
  {
@@ -173,7 +176,7 @@ npm install            //安装项目所需依赖
             "ip":"0.0.0.0",                 //服务启动 IP ，保持默认
             "port":8001,                    //服务启动端口，保持默认
             "reliablecb":true               //回调选择，保持默认
-		    "reliablecbtimeout":5000        //消息拉取轮询间隔（毫秒）
+            "reliablecbtimeout":5000        //消息拉取轮询间隔（毫秒）
         }
     }
 ```
@@ -204,13 +207,13 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 ## 体验服务
 
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试。
-腾讯云会针对用户上传的视频进行内容审核，审核结果为“review”（建议人审）或者“block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问（可能需要外网权限）http://ip:port/index.html 即可体验视频审核功能。页面如图：
+腾讯云会针对用户上传的视频进行内容审核，审核结果为“review”（建议人审）或者“block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://ip:port/index.html 即可体验视频审核功能。其中 ip 为服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
 
 
 ![鉴黄墙](https://main.qcloudimg.com/raw/69a49db945bc12e3f6d7cb3379c26808.png)
 
 
-页面左侧显示视频id和title，以及触犯规则的视频截图，截图confidence超过70会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
+页面左侧显示视频 id 和 title，以及触犯规则的视频截图，截图 confidence 超过70会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
 
 视频下方是审核通过/屏蔽按钮，审核人点击任一审核按钮后，可获取下一条待审视频。 
 注意事项：
@@ -225,15 +228,12 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 ### 点播消息回调
 
 
-在点播系统，视频处理等操作均为离线任务。与传统的“即时任务”相比，离线任务的特点是：任务的执行开销较大，耗时较长（可能长达数十分钟）。 点播提供了消息队列和 Http 请求回调两种方式实现时间通知。其中Http请求回调方式要求服务器地址为公网ip，否则无法接收到回调。本项目实现了这两种事件通知方式，默认使用消息队列，开发者可通过配置文件中 reliablecb 参数配置回调方式，true 为消息队列方式（可靠回调）。
+在点播系统，视频处理等操作均为离线任务。与传统的“即时任务”相比，离线任务的特点是：任务的执行开销较大，耗时较长（可能长达数十分钟）。 点播提供了消息队列和 Http 请求回调两种方式实现时间通知。其中Http请求回调方式要求服务器地址为公网 ip，否则无法接收到回调。本项目实现了这两种事件通知方式，默认使用消息队列，开发者可通过配置文件中 reliablecb 参数配置回调方式，true 为消息队列方式（可靠回调）。
 
 1. 可靠回调客户端实现：通过一个轮询定时器不断调用 pullEvent 接口拉取点播消息队列中的消息处理，并 调用 comfireEvent 消费已经处理的消息，实现代码由 /task/reliable_cb_task.js实现
 
 2. Http 回调客户端实现： 为服务器添加一个路由，处理点播 Post 过来的请求，实现代码由/routes/taskcb.js 实现。
 
-### 视频内容审核
-
-视频内容审核基于腾讯云强大的 AI 能力，高效识别视频中的违规内容，帮助客户降低色情、暴恐、涉政等违规风险。详见[视频内容审核综述](https://cloud.tencent.com/document/product/266/17914)。
 
 
 ### 帐号体系
@@ -309,9 +309,9 @@ crypto.createHash("md5").update(token + dataMd5).digest("hex");
 为了方便调用点播接口，封装部分点播功能接口在 /utils/vod_helper.js 中，开发者可根据需要添加更多的接口实现。
 ```
 /**
- * 为腾讯云服务SDK添加es6支持
- * @param {请求数据,将作为GET或者POST方法输入参数} params 
- * @param {HTTP请求配置，如方法设置等} opts 
+ * 为腾讯云服务 SDK 添加 es6 支持
+ * @param {请求数据,将作为 GET 或者 POST 方法输入参数} params 
+ * @param { HTTP 请求配置，如方法设置等} opts 
  * @param {额外配置项,如外网代理等} extras 
  */
 function CpiAsyncRequest(params,opts={},extras={});
@@ -329,8 +329,8 @@ function CpiAsyncRequest(params,opts={},extras={});
 ```
 
  /**
- * 点播平台媒资信息获取封装接口，详细信息见https://cloud.tencent.com/document/product/266/8586
- * @param {fileId:视频文件ID,infoFilter:需要获取的信息，extraOpt:外网代理配置等} param0 
+ * 点播平台媒资信息获取封装接口，详细信息见：https://cloud.tencent.com/document/product/266/8586
+ * @param {fileId：视频文件 ID，infoFilter：需要获取的信息，extraOpt：外网代理配置等} param0 
  */
  async getVideoInfo({fileId,infoFilter=[],extraOpt={}});
 ```
@@ -396,8 +396,8 @@ function CpiAsyncRequest(params,opts={},extras={});
 ### 鉴黄墙审核结果
 ```
     ReviewMessage:{
-        Porn : "porn",  //通过审核
-        Pass : "pass",  //屏蔽视频
+        Porn:"porn",  //通过审核
+        Pass:"pass",  //屏蔽视频
 }
 
 ```
@@ -439,8 +439,8 @@ data.list.n | ugcinfo | 视频详细信息 |
 :-: | :-: | :-: | :-: 
 status | integer | 视频状态 |  0 
 review_status| integer | 视频审核状态 |  0
-userid | string | 所属用户id | 
-file_id | string | 文件id | 
+userid | string | 所属用户 id | 
+file_id | string | 文件 id | 
 title | string | 视频标题 |
 frontcover | string | 视频封面 |
 location | string | 上传地理位置 |
@@ -460,12 +460,12 @@ avatar | string | 用户头像 |
     			{
     			    "status":0,
     			    "review_status":0,
-    				"userid":"xxx",			//用户id
+    				"userid":"xxx",			//用户 id
     				"nickname":"xxx",		//昵称
-    				"avatar":"xxx",			//头像url
-    				“file_id":"xxx",        //点播文件id
+    				"avatar":"xxx",			//头像 url
+    				“file_id":"xxx",        //点播文件 id
     				"title":"xxxx“,         //标题
-    				"frontcover":"xxx",     //封面图url
+    				"frontcover":"xxx",     //封面图 url
     				"location":"xxx",       //地理位置
     				"play_url":"xxx",       //播放地址
     				"create_time":"xxxx-xx-xx xx:xx:xx",  //创建时间
@@ -494,7 +494,7 @@ POST
 #### 参数说明
 参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
 :-: | :-: | :-: | :-: | :-: | :-: 
-userid | string | 是 |用户id |   |   user001
+userid | string | 是 |用户 id |   |   user001
 password | string | 是| 密码 |  |    md5(md5(password)+userid)
 
 #### 请求示例
@@ -518,7 +518,7 @@ message| string | 返回消息 |
 ### 接口名称
 login
 ### 功能说明
-客户端使用帐号和密码登录，登录成功后返回令牌信息，cos配置信息和点播配置信息，其中token用于随后的权限校验，用户在调用需要鉴权的接口时需要带上 userid 和 HTTP_LITEAV_SIG 两个数据，其中 HTTP_LITEAV_SIG = md5(token+req.url+userid)。
+客户端使用帐号和密码登录，登录成功后返回令牌信息，cos 配置信息和点播配置信息，其中 token 用于随后的权限校验，用户在调用需要鉴权的接口时需要带上 userid 和 HTTP_LITEAV_SIG 两个数据，其中 HTTP_LITEAV_SIG = md5(token+req.url+userid)。
 
 ### 请求方式
 
@@ -568,17 +568,17 @@ data.vod_info.SecretId | string | vod SecretId |
     	"message": "OK",
     	"data":{ 
     		"token": "xxx",    //随机数
-    		"refresh_token": "xxx", //续期token，随机数
+    		"refresh_token": "xxx", //续期 token，随机数
     		"expires": 300,  // 过期时间（秒）
-    		"roomservice_sign": {       //登录roomservice的签名
+    		"roomservice_sign": {       //登录 roomservice 的签名
     			"sdkAppID": 123456,     // 云通信 sdkappid
     			"accountType": "xxxx",  // 云通信 账号集成类型
-    			"userID": "xxxx",       // 用户id
+    			"userID": "xxxx",       // 用户 id
     			"userSig": "xxxxxxxx",  // 云通信用户签名
     		},
     		"cos_info": {
-    		    "Bucket": "xxx",           //cos bucket名
-    		    "Region": "xxx",           //cos bucket所在地域
+    		    "Bucket": "xxx",           //cos bucket 名
+    		    "Region": "xxx",           //cos bucket 所在地域
     		    "Appid":  "xxx",           //cos appid
     		    "SecretId": "xxx"          //cos secretid
     		}
@@ -611,8 +611,8 @@ POST
 :-: | :-: | :-: | :-: 
 message| string | 返回消息 |  
 data| object | 返回数据 |  
-data.signKey | string | 按照cos的签名规则计算出来的签名key | 
-data.keyTime | string | 按照cos的签名规则，需要的签名有效期 | 
+data.signKey | string | 按照 cos 的签名规则计算出来的签名 key | 
+data.keyTime | string | 按照 cos 的签名规则，需要的签名有效期 | 
 
 
 
@@ -632,7 +632,7 @@ data.keyTime | string | 按照cos的签名规则，需要的签名有效期 |
 ### 接口名称
 upload_user_info
 ### 功能说明
-注册完成后，上传用户头像、昵称等信息,后台将根据请求数据带的userid更新相应用户属性。
+注册完成后，上传用户头像、昵称等信息,后台将根据请求数据带的 userid 更新相应用户属性。
 
 ### 请求方式
 
@@ -649,7 +649,7 @@ POST
 
 参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
 :-: | :-: | :-: | :-: | :-: | :-: 
-nickname | string | 是 |用户id |   |   user001
+nickname | string | 是 |用户 id |   |   user001
 avatar | string | 是| 头像 |  |   
 sex | string | 是| 性别 0:male,1:female,-1:unknown |  |    
 frontcover | string | 是| 封面地址 |  |  
@@ -719,7 +719,7 @@ data.frontcover | string | 封面 |
     		"nickname":"xxx",
     		"avatar":"http://xxxx",
     		"sex":0 //0:male,1:female,-1:unknown
-    		"frontcover":"http://xxxx",     //封面图url
+    		"frontcover":"http://xxxx",     //封面图 url
     	}
     }
 ```
@@ -790,9 +790,9 @@ POST
 
 参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
 :-: | :-: | :-: | :-: | :-: | :-: 
-file_id | string | 是 |点播文件id |   |   user001
+file_id | string | 是 |点播文件 id |   |   user001
 title | string | 是| 标题 |  |   
-frontcover | string | 是| 封面URL |  |    
+frontcover | string | 是| 封面 URL |  |    
 location | string | 是| 地理位置 |  |  
 play_url | string | 是| 播放地址 |  |  
 
@@ -827,8 +827,8 @@ POST
 参数名 | 类型 | 必填 | 描述 | 默认值 | 示例 
 :-: | :-: | :-: | :-: | :-: | :-: 
 status | string | 是 |pass/porn |   |   
-task_id | string | 是| 任务id |  |   
-file_id | string | 是| 视频id |  |    
+task_id | string | 是| 任务 id |  |   
+file_id | string | 是| 视频 id |  |    
 reviewer_id | string | 是| 审核人 |  | admin01 
 
 #### 接口应答
