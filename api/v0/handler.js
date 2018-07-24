@@ -517,10 +517,7 @@ async function get_vod_sign(req, res) {
             appid: gVodHelper.conf.appid,
             SubAppId: gVodHelper.conf.SubAppId,
             SecretId: gVodHelper.conf.SecretId,
-<<<<<<< HEAD
             signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
-=======
->>>>>>> master
         }
     });
 }

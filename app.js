@@ -12,11 +12,7 @@ const VodHelper = require('./utils/vod_helper').VodHelper;
 const getTaskHandler = require('./routes/taskcbHandlers').getTaskHandler;
 const app = express();
 const moment = require('moment');
-<<<<<<< HEAD
-const taskmsg = require('./taskmsg.js');
-=======
 const COS = require('cos-nodejs-sdk-v5');
->>>>>>> master
 app.disable('x-powered-by');
 if (!process.env.NODE_ENV) {
 	process.env.NODE_ENV = 'development';
@@ -25,12 +21,9 @@ if (!process.env.NODE_ENV) {
 
 
 //配置文件加载
-<<<<<<< HEAD
-=======
 function loadConfig() {
     const fs = require('fs');
     return JSON.parse(fs.readFileSync('./conf/localconfig.json'));
->>>>>>> master
 }
 
 /**
@@ -38,8 +31,6 @@ function loadConfig() {
  */
 function initilizeApplication() {
 
-<<<<<<< HEAD
-=======
     //封装日志输出
     console.log = (function (oriLogFunc) {
 
@@ -74,7 +65,6 @@ function initilizeApplication() {
     };
 
     global.gVodHelper = new VodHelper(GLOBAL_CONFIG.tencentyunaccount);
->>>>>>> master
 }
 
 /**
@@ -82,8 +72,6 @@ function initilizeApplication() {
  */
 function initMiddleware() {
 
-<<<<<<< HEAD
-=======
     app.use(compress());
 
     //获取原始post值用来计算校验
@@ -255,17 +243,12 @@ async function startServer() {
     }catch(err){
         console.error("localconfig error :"+JSON.stringify(err));
         process.exit(0);
->>>>>>> master
 
     }
 
 	initilizeApplication();
 	initMiddleware();
 
-<<<<<<< HEAD
-
-
-=======
     try{
         await initCosBucket()
     }catch(err){
@@ -288,4 +271,3 @@ async function startServer() {
     });
 }
 startServer();
->>>>>>> master

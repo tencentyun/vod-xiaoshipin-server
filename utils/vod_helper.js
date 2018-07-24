@@ -50,10 +50,7 @@ class VodHelper{
         var expired = current + timeStamp;  
 
         var arg_list = {
-<<<<<<< HEAD
    
-=======
->>>>>>> master
             secretId: this.conf.SecretId,
             currentTimeStamp: current,
             expireTime: expired,
