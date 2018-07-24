@@ -1,0 +1,66 @@
+.file_info {
+    margin: 20px 0 20px 10px;
+}
+
+.file_info .video_name {
+    margin-left: 20px;
+}
+
+.file_info .value {
+    margin-left: 10px;
+}
+
+.pic_container {
+    width: 70%;
+    display: inline-block;
+    max-height: 800px;
+    overflow: auto;
+}
+
+.pic_container .pic {
+    display: inline-block;
+    margin: 4px;
+    width: 160px;
+}
+
+.pic img {
+    width: 100%;
+}
+
+.video_container {
+    width: 29%;
+    display: inline-block;
+    float: right;
+}
+
+.button {
+    margin: 20px 0 0 20px;
+}
+
+.button_next {
+    margin: 40px 0 0 20px;
+}
+
+.pass {
+    cursor: pointer;
+    background-color: #2626dc;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.not_pass {
+    cursor: pointer;
+    background-color: #115d47;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.next {
+    cursor: pointer;
+    background-color: #82881f;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+}

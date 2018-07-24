@@ -1,0 +1,32 @@
+{
+    "dbconfig":{
+        "host":"127.0.0.1",
+        "user":"litvideo",
+        "password":"litvideo",
+        "database":"db_litvideo",
+        "port":3306,
+        "supportBigNumbers": true,
+        "connectionLimit":10
+    },
+    "tencentyunaccout":{
+        "appid":"1256244234",
+        "SubAppId":"1400091663",
+        "SecretId": "AKID3EE1e8VEZu690mnq4B9vgKq921oQg22q",
+        "SecretKey": "oTxHPSM3Y1JepsshKvOfjeMr9EBC2g8d"
+    },
+
+    "cos":{
+        "appid":"1256244234",
+        "bucket":"xiaoship",
+        "region":"ap-shanghai",
+        "SecretId": "AKID3EE1e8VEZu690mnq4B9vgKq921oQg22q",
+        "SecretKey": "oTxHPSM3Y1JepsshKvOfjeMr9EBC2g8d"
+    },
+
+
+    "server":{
+        "ip":"0.0.0.0",
+        "port":8001,
+        "reliablecb":false
+    }
+}

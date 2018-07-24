@@ -44,16 +44,13 @@ class VodHelper{
         });
     }
 
-    /**
-     * 生成上传签名
-     * @param {timeStamp:过期时间戳, procedure:上传启动任务流} param0 
-     */
-    createFileUploadSignature({timeStamp = 86400,procedure='',classId=0,oneTimeValid=0,sourceContext=''}) {
+    createFileUploadSignature({timeStamp = 86400,procedure='',classId=0,oneTimeValid=0,sourceContext='',vodSubAppId=0}) {
   
         var current = parseInt((new Date()).getTime() / 1000)
         var expired = current + timeStamp;  
 
         var arg_list = {
+   
             secretId: this.conf.SecretId,
             currentTimeStamp: current,
             expireTime: expired,

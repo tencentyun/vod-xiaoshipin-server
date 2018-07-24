@@ -10,6 +10,7 @@ async function veryfySign(req, res, next) {
 
 
     let liteavSig = req.headers['liteav-sig']
+	console.log(liteavSig);
 
     if (!param.userid || !liteavSig || !param.timestamp || !param.expires) {
         return res.status(403).json({

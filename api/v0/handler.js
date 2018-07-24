@@ -291,14 +291,11 @@ function checkString({
     if (!maxLength) {
         maxLength = 65536;
     }
-
-
+	if (!str) {
+		str = "";
+	}
     if (str == undefined && minLength > 0) {
         return false;
-    }
-
-    if(!str){
-        str = ""
     }
 
     if (str.length > maxLength || str.length < minLength) {
@@ -315,7 +312,7 @@ async function upload_user_info(req, res) {
     let avatar = param.avatar;
     let frontcover = param.frontcover;
     let sex = param.sex;
-
+    console.log(avatar);
     if (!checkString({ str: userid, maxLength: 50 })) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
@@ -520,7 +517,7 @@ async function get_vod_sign(req, res) {
             appid: gVodHelper.conf.appid,
             SubAppId: gVodHelper.conf.SubAppId,
             SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'QCVB_ProcessUGCFile(0,0,0,10)' })
+            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
         }
     });
 }

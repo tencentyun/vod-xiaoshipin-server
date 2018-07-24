@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <title>小视频审核平台demo</title>
+    <link href="./css/reset.css" rel="stylesheet">
+    <link href="./css/index.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="file_info">
+            <span class="name">视频ID：</span><span id="file_id" class="value"></span>
+            <span class="name video_name">视频名称：</span><span id="file_name" class="value"></span>
+        </div>
+        <div id="pic_container_id" class="pic_container"></div>
+        <div class="video_container">
+            <div class="video">
+                <video id="video_id" controls></video>
+            </div>
+            <div class="button">
+                <span id="pass_id" class="pass">通过审核</span>
+                <span id="not_pass_id" class="not_pass">屏蔽视频</span>
+            </div>
+        </div>
+    </div>
+    <script src="./lib/jquery-3.2.1.min.js"></script>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

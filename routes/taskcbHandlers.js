@@ -106,6 +106,7 @@ async function TranscodeCompleteHandler(taskCbMsg) {
  * @param {*} taskCbMsg 
  */
 async function ProcedureStateChangedHandler(taskCbMsg) {
+	console.log("procedure")
     if (!taskCbMsg || taskCbMsg.eventType != enums.TaskCBEventType.ProcedureStateChanged) {
         throw { message: "can not process this task in ProcedureStateChangedHandler" };
     }
@@ -115,14 +116,49 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
     try {
 
         let fileId = param.fileId;
+		let taskId = param.vodTaskId;
+		
+        console.log(JSON.stringify(param));
         if (!fileId) {
             return;
         }
         conn = await gDataBases["db_litvideo"].getConnection();
+		for(let review of param.contentReviewList){
+			if (review.taskType == "Porn" && review.status == "SUCCESS"){
+				if (review.output.suggestion == "review"){
+					console.log(review);
+            		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
+					if(result.length == 0){
+						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
+						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
+						}
+					return;
+					
+				}else if (review.output.suggestion == "block"){
+					console.log("涉黄");
+					await conn.queryAsync('update tb_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
+            		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
+					if(result.length == 0){
+						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
+						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
+						}
+					return;
+				}else{
+					console.log("非涉黄");
+					/*
+            		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
+					if(result.length == 0){
+						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
+						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
+						}
+						*/
+					await conn.queryAsync('update tb_ugc set review_status=? where file_id=? and review_status=?', [enums.ReviewStatus.Normal, fileId, enums.ReviewStatus.NotReivew]);
+					return;
+				}
 
-
-        console.log(JSON.stringify(param));
-
+			}
+		}
+/*
         //判断是否涉黄
         if (param.aiReview && param.aiReview.riskType.length != 0) {
             await conn.queryAsync('update tb_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
@@ -133,7 +169,7 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
             await conn.queryAsync('update tb_ugc set review_status=? where file_id=? and review_status=?', [enums.ReviewStatus.Normal, fileId, enums.ReviewStatus.NotReivew]);
             return;
         }
-
+*/
         //更新视频信息
         await updateBasicInfo(fileId);
 

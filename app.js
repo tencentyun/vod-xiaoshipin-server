@@ -9,12 +9,13 @@ const bodyParser = require('body-parser');
 const compress = require('compression');
 const MySQLHelper = require('./utils/mysql_helper');
 const VodHelper = require('./utils/vod_helper').VodHelper;
+const getTaskHandler = require('./routes/taskcbHandlers').getTaskHandler;
 const app = express();
 const moment = require('moment');
 const COS = require('cos-nodejs-sdk-v5');
 app.disable('x-powered-by');
 if (!process.env.NODE_ENV) {
-    process.env.NODE_ENV = 'development';
+	process.env.NODE_ENV = 'development';
 }
 
 
@@ -103,6 +104,8 @@ function initMiddleware() {
         //回调路由
         app.use('/', require('./routes/taskcb'));
     }
+	//审核
+    app.use('/review', require('./api/v0/review/route'));
     //功能接口路由
     app.use('/', require('./api/v0/route'));
 
@@ -245,8 +248,8 @@ async function startServer() {
 
     }
 
-    initilizeApplication();
-    initMiddleware();
+	initilizeApplication();
+	initMiddleware();
 
     try{
         await initCosBucket()
