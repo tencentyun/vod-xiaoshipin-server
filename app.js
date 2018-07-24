@@ -104,6 +104,8 @@ function initMiddleware() {
         //回调路由
         app.use('/', require('./routes/taskcb'));
     }
+	//审核
+    app.use('/review', require('./api/v0/review/route'));
     //功能接口路由
     app.use('/', require('./api/v0/route'));
 

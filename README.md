@@ -115,6 +115,26 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 在腾讯云点播控制台，【视频处理设置】下【回调配置中】设置回调模式为可靠回调，【事件回调配置】项全部选中，参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)。该配置可能需要 10 分钟才能生效
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
 
+### 配置视频内容审核模板
+
+本项目对视频发起鉴黄审核，在派发给客户端上传签名时带上了鉴黄模版，处理回调信息时根据鉴黄结果修改视频审核状态。
+上传签名计算由api/v0/handler.js实现，具体如下:
+
+```
+async function get_vod_sign(req, res) {
+    res.json({
+        code: ENUMS.ErrCode.EC_OK,
+        message: "OK",
+        data: {
+            appid: gVodHelper.conf.appid,
+            SubAppId: gVodHelper.conf.SubAppId,
+            SecretId: gVodHelper.conf.SecretId,
+            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
+        }
+    });
+}
+```
+
 # 快速开始
 
 ## 服务端搭建
@@ -186,7 +206,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试。
 腾讯云会针对用户上传的视频进行内容审核，审核结果为“review”（建议人审）或者“block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问（可能需要外网权限）http://ip:port/index.html 即可体验视频审核功能。页面如图：
 
-![鉴黄墙](https://main.qcloudimg.com/raw/19e609ff3ef2cfeb712f12dc7d900e4e.png)
+![鉴黄墙](https://main.qcloudimg.com/raw/69a49db945bc12e3f6d7cb3379c26808.png)
 
 页面左侧显示视频id和title，以及触犯规则的视频截图，截图confidence超过70会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
 
@@ -212,23 +232,6 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 ### 视频内容审核
 
 视频内容审核基于腾讯云强大的 AI 能力，高效识别视频中的违规内容，帮助客户降低色情、暴恐、涉政等违规风险。详见[视频内容审核综述](https://cloud.tencent.com/document/product/266/17914)。
-本项目对视频发起鉴黄审核，在派发给客户端上传签名时带上了鉴黄模版，处理回调信息时根据鉴黄结果修改视频审核状态。
-上传签名计算由api/v0/handler.js实现，具体如下:
-
-```
-async function get_vod_sign(req, res) {
-    res.json({
-        code: ENUMS.ErrCode.EC_OK,
-        message: "OK",
-        data: {
-            appid: gVodHelper.conf.appid,
-            SubAppId: gVodHelper.conf.SubAppId,
-            SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
-        }
-    });
-}
-```
 
 
 ### 帐号体系
