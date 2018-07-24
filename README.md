@@ -183,7 +183,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 ## 体验服务
 
-服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试
+服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试。
 腾讯云会针对用户上传的视频进行内容审核，审核结果为“review”（建议人审）或者“block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问（可能需要外网权限）http://ip:port/index.html 即可体验视频审核功能。页面如图：
 
 ![鉴黄墙](https://main.qcloudimg.com/raw/19e609ff3ef2cfeb712f12dc7d900e4e.png)
