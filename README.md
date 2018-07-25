@@ -235,7 +235,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 打开 App，下拉列表会将媒资信息更新到视频列表。
 用户上传视频后，会自动发起内容审核，后台根据返回的结果更新媒资，并在 App 列表页面-视频封面图的左上角展示：审核结果为“pass”的显示为“已审核”，“review”和“block”的视频会进行人工审核。人工审核提交结果后，后台根据审核结果更新媒资，结果为“屏蔽”的视频显示为“涉黄”，“通过”的视频显示为“已审核”。其中只有“已通过”是视频可以播放，其他状态不可播放。如图所示：
 
-![媒资](https://main.qcloudimg.com/raw/bde628f5f0c9c463e56ffb15710b32ff.png)
+![媒资](https://main.qcloudimg.com/raw/6fb7f08313dc96ab50140ab72b3906b8.png)
 
 
 
