@@ -3,22 +3,18 @@
 
 # 概述
 
-本项目为腾讯云小视频 APP 后台服务，采用 Nodejs 和 Mysql 搭建，提供了如下功能的演示：
-1. 腾讯云点播平台视频上传
-2. 消息回调处理
-3. 媒资管理
-4. 视频内容审核
-5. 人工视频审核
+本项目为腾讯云小视频 APP 后台服务，采用 Nodejs 和 MySQL 搭建，提供了如下功能的演示：
+1. 上传签名派发
+2. 媒资管理
+3. 内容审核
 
-其中视频内容审核基于腾讯云强大的 AI 能力，高效识别视频中的违规内容，帮助客户降低色情、暴恐、涉政等违规风险，详见[视频内容审核综述](https://cloud.tencent.com/document/product/266/17914)。用户可以下载本项目源码搭建自己的小视频后台服务。
-
+用户可以下载本项目源码，快速搭建自己的小视频后台服务。
 
 
 # 准备
 
 ## 帐号申请
  1. 申请[腾讯云](https://cloud.tencent.com/)帐号，获取[API密钥](https://console.cloud.tencent.com/cam/capi)，得到 Appid、SecretId、SecretKey
- 2. 设置点播平台回调配置:部署域名 `/taskcb` ，参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
 
 ## 环境准备
 
@@ -31,7 +27,7 @@ sudo apt-get install -y nodejs
 
 
 
-### 安装 Mysql (mariadb) 
+### 安装 MySQL (mariadb) 
 ```
 sudo apt update
 sudo apt install mariadb-server
@@ -40,7 +36,7 @@ sudo service mysql start
 ```
 ### 初始化数据库
 
-1. 在终端使用 root 帐号登录 Mysql
+1. 在终端使用 root 帐号登录 MySQL
 ```
 sudo mysql -u root -p
 ```
@@ -127,7 +123,7 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
    
 在工作目录下，安装项目所需依赖
 ```
-npm install            //安装项目所需依赖
+npm install            
 ```
 在conf文件夹下，复制config_template.json文件并命名为localconfig.json文件，修改腾讯云API密钥、数据库参数配置，以及 COS 存储配置。
 
@@ -160,7 +156,7 @@ npm install            //安装项目所需依赖
 ```
 
 ## 配置可靠回调
-在腾讯云点播控制台，【视频处理设置】下【回调配置中】设置回调模式为可靠回调，【事件回调配置】中选择上传完成回调，该配置需要 10 分钟左右能生效。
+在腾讯云点播控制台，【视频处理设置】下【回调配置】中设置回调模式为可靠回调，【事件回调配置】中选择上传完成回调，该配置需要 10 分钟左右能生效。参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
 
 
@@ -210,9 +206,18 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 参考[拥有自己的短视频app-替换代码中的后台地址](https://cloud.tencent.com/document/product/584/15540#step4.-.E6.9B.BF.E6.8D.A2.E7.BB.88.E7.AB.AF.E6.BA.90.E4.BB.A3.E7.A0.81.E4.B8.AD.E7.9A.84.E5.90.8E.E5.8F.B0.E5.9C.B0.E5.9D.80)
 
 
-## 体验服务
+## 功能体验
+
+### 视频上传
 
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试。
+打开短视频App，点击底部加号，可以选择“录制”，“视频编辑”和“图片编辑”方式上传视频：
+
+![App](https://main.qcloudimg.com/raw/bde628f5f0c9c463e56ffb15710b32ff.png)
+
+
+### 视频人工审核
+
 腾讯云会针对用户上传的视频进行内容审核，审核结果为 “review”（建议人审）或者 “block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://ip:port/index.html 即可体验视频审核功能。其中 ip 为服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
 
 ![鉴黄墙](https://main.qcloudimg.com/raw/69a49db945bc12e3f6d7cb3379c26808.png)
