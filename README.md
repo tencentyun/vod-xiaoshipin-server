@@ -184,9 +184,6 @@ async function get_vod_sign(req, res) {
 }
 ```
 
-## 客户端搭建
-
-参考[拥有自己的短视频app-替换代码中的后台地址](https://cloud.tencent.com/document/product/584/15540#step4.-.E6.9B.BF.E6.8D.A2.E7.BB.88.E7.AB.AF.E6.BA.90.E4.BB.A3.E7.A0.81.E4.B8.AD.E7.9A.84.E5.90.8E.E5.8F.B0.E5.9C.B0.E5.9D.80)
 
 
 ## 启动服务
@@ -208,18 +205,20 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 {"code":200,"message":"OK","data":{"list":[],"total":0}}
 ```
 
+## 客户端搭建
+
+参考[拥有自己的短视频app-替换代码中的后台地址](https://cloud.tencent.com/document/product/584/15540#step4.-.E6.9B.BF.E6.8D.A2.E7.BB.88.E7.AB.AF.E6.BA.90.E4.BB.A3.E7.A0.81.E4.B8.AD.E7.9A.84.E5.90.8E.E5.8F.B0.E5.9C.B0.E5.9D.80)
 
 
 ## 体验服务
 
 服务启动正常后，可以使用客户端或者腾讯云点播控制台上传视频进行测试。
-腾讯云会针对用户上传的视频进行内容审核，审核结果为“review”（建议人审）或者“block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://ip:port/index.html 即可体验视频审核功能。其中 ip 为服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
-
+腾讯云会针对用户上传的视频进行内容审核，审核结果为 “review”（建议人审）或者 “block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://ip:port/index.html 即可体验视频审核功能。其中 ip 为服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
 
 ![鉴黄墙](https://main.qcloudimg.com/raw/69a49db945bc12e3f6d7cb3379c26808.png)
 
 
-页面左侧显示视频 id 和 title，以及触犯规则的视频截图，截图 confidence 超过70会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
+页面左侧显示视频 id 和 title，以及触犯规则的视频截图，截图 confidence 超过 70 会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
 
 视频下方是审核通过/屏蔽按钮，审核人点击任一审核按钮后，可获取下一条待审视频。 
 注意事项：
