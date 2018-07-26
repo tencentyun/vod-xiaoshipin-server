@@ -36,17 +36,17 @@ sudo service mysql start
 ```
 ### 初始化数据库
 
-1. 在终端使用 root 帐号登录 MySQL
+1. 在终端使用 root 帐号登录 MySQL：
 ```
 sudo mysql -u root -p
 ```
-2. 创建小视频数据库用户 litvideo
+2. 创建小视频数据库用户 litvideo：
 
 ```
 create user 'litvideo'@'localhost' identified by 'litvideo';
 ```
 
-3. 创建小视频数据库 db_litvideo，并授权给小视频用户 litvideo
+3. 创建小视频数据库 db_litvideo，并授权给小视频用户 litvideo：
 
 ```
 create database db_litvideo default charset utf8 collate utf8_general_ci;
@@ -114,14 +114,14 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 # 快速开始
 
 ## 配置工程
-进入工作目录，克隆项目文件
+进入工作目录，克隆项目文件：
 
 ```
  git clone https://github.com/tencentyun/vod-xiaoshipin-server.git
  cd vod-xiaoshipin-server
 ```
    
-在工作目录下，安装项目所需依赖
+在工作目录下，安装项目所需依赖：
 ```
 npm install            
 ```
@@ -156,7 +156,7 @@ npm install
 ```
 
 ## 配置可靠回调
-在腾讯云点播控制台，【视频处理设置】下【回调配置】中设置回调模式为【可靠回调】，【事件回调配置】中选择【上传完成回调】，该配置需要 10 分钟左右能生效。详情参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)
+在腾讯云点播控制台，【视频处理设置】下【回调配置】中设置回调模式为【可靠回调】，【事件回调配置】中选择【上传完成回调】。详情参考[腾讯云点播回调配置](https://cloud.tencent.com/document/product/266/7829)。
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
 
 
@@ -185,25 +185,25 @@ async function get_vod_sign(req, res) {
 ## 启动服务
 
 
-在工程根目录下启动服务
+在工程根目录下启动服务：
 ```
 npm start
 ```
 
-服务启动后，在另外一个终端下测试视频拉取接口
+服务启动后，在另外一个终端下测试视频拉取接口：
 
 ```
 curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/get_ugc_list
 ```
 
-如果服务正常运行，可返回如下结果
+如果服务正常运行，可返回如下结果：
 ```
 {"code":200,"message":"OK","data":{"list":[],"total":0}}
 ```
 
 ## 客户端搭建
 
-参考[拥有自己的短视频app-替换代码中的后台地址](https://cloud.tencent.com/document/product/584/15540#step4.-.E6.9B.BF.E6.8D.A2.E7.BB.88.E7.AB.AF.E6.BA.90.E4.BB.A3.E7.A0.81.E4.B8.AD.E7.9A.84.E5.90.8E.E5.8F.B0.E5.9C.B0.E5.9D.80)
+参考[拥有自己的短视频app-替换代码中的后台地址](https://cloud.tencent.com/document/product/584/15540#step4.-.E6.9B.BF.E6.8D.A2.E7.BB.88.E7.AB.AF.E6.BA.90.E4.BB.A3.E7.A0.81.E4.B8.AD.E7.9A.84.E5.90.8E.E5.8F.B0.E5.9C.B0.E5.9D.80)。
 
 
 ## 功能体验
@@ -225,7 +225,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 页面左侧显示视频 id 和 title，以及触犯规则的视频截图，截图 confidence 超过 70 会标红，右侧支持视频播放。点击相应截图,视频会从指定位置开始播放。 
 
-视频下方是审核通过/屏蔽按钮，审核人点击任一审核按钮后，可获取下一条待审视频。如果没有更多审核任务了，审核完当前视频后会提示：没有更多任务
+视频下方是审核通过/屏蔽按钮，审核人点击任一审核按钮后，可获取下一条待审视频。如果没有更多审核任务了，审核完当前视频后会提示：没有更多任务。
 
 ### 媒资管理
 
