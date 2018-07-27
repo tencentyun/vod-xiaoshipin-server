@@ -19,7 +19,7 @@
 ## 环境准备
 
 ### 安装 Nodejs
-注意：nodejs 版本要求高于 8.x
+注意：nodejs 版本要求高于 8.x。
 ```
 curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -53,7 +53,7 @@ create database db_litvideo default charset utf8 collate utf8_general_ci;
 grant all privileges on `db_litvideo`.* to 'litvideo'@'%' identified by 'litvideo';
 ```
 
-4. 使用 litvideo，新建所需要的数据库
+4. 使用 litvideo，新建所需要的数据库：
 ```
 use db_litvideo;
 CREATE TABLE IF NOT EXISTS tb_account(
@@ -125,10 +125,10 @@ CREATE TABLE IF NOT EXISTS tb_review_record(
 ```
 npm install            
 ```
-在conf文件夹下，复制config_template.json文件并命名为localconfig.json文件，修改腾讯云API密钥、数据库参数配置，以及 COS 存储配置。
+在 conf 文件夹下，复制 config_template.json 文件并命名为 localconfig.json 文件，修改腾讯云 API 密钥、数据库参数配置，以及 COS 存储配置。
 
 ```
- {
+{
         "dbconfig":{                        //数据库配置
             "host":"127.0.0.1",             //数据库 IP 地址，保持默认本机
             "user":"litvideo",              //数据库用户名，保持默认
@@ -152,7 +152,7 @@ npm install
             "reliablecb":true               //回调选择，保持默认
             "reliablecbtimeout":5000        //消息拉取轮询间隔（毫秒）
         }
-    }
+}
 ```
 
 ## 配置可靠回调
@@ -188,15 +188,15 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 ### 视频上传
 
-服务启动正常后，打开短视频App，点击底部加号，可以选择“录制”，“视频编辑”和“图片编辑”方式上传视频。上传成功后会在视频列表显示:
+服务启动正常后，打开短视频 App，点击底部加号，可以选择“录制”，“视频编辑”和“图片编辑”方式上传视频。上传成功后会在视频列表显示:
 
 ![App](https://main.qcloudimg.com/raw/bde628f5f0c9c463e56ffb15710b32ff.png)
 
-用户可上传本项目提供的测试视频，用于体验后续人工审核功能：将项目文件夹 source 中的 video.mp4 导入手机，打开App，通过“视频编辑”方式上传并发布。
+用户可上传本项目提供的测试视频，用于体验后续人工审核功能：将项目文件夹 source 中的 video.mp4 导入手机，打开 App，通过“视频编辑”方式上传并发布。
 
-### 视频人工审核
+### 内容审核
 
-腾讯云会针对用户上传的视频进行内容审核，审核结果为 “review”（建议人审）或者 “block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://ip:port/index.html 即可体验视频审核功能。其中 ip 为服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
+腾讯云会针对用户上传的视频进行内容审核，审核结果为“pass”的视频可直接在 App 播放，审核结果为 “review”（建议人审）或者 “block”（建议屏蔽）的视频会推到鉴黄墙进行人工审核，打开浏览器访问 http://yourip:port/index.html 即可体验视频审核功能。其中 yourip 为运行本服务的服务器 ip 地址, port 由配置文件 localconfig.json 中，server 的 port 字段定义。页面如图：
 
 ![鉴黄墙](https://main.qcloudimg.com/raw/fed1aa095fc4c0d9ba563abd2055775d.png)
 
@@ -224,6 +224,6 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 3. 腾讯云点播平台媒资获取：https://cloud.tencent.com/document/product/266/8586
 
-4. 腾讯云点播平台 AI 鉴黄：https://cloud.tencent.com/document/product/266/11701#.E8.A7.86.E9.A2.91.E9.89.B4.E9.BB.84
+4. 腾讯云点播平台视频审核：https://cloud.tencent.com/document/product/266/17914
 
-5. 腾讯云Node.js SDK：https://cloud.tencent.com/document/sdk/Node.js
+5. 腾讯云 Node.js SDK：https://cloud.tencent.com/document/sdk/Node.js
