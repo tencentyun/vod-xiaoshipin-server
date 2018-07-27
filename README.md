@@ -160,28 +160,6 @@ npm install
 ![回调设置](https://main.qcloudimg.com/raw/3dcabb94e5ce7a84c0497cd4c0cb9941.png)
 
 
-## 配置视频内容审核模板
-
-本项目对视频发起鉴黄审核，在派发给客户端上传签名时带上了鉴黄模版，处理回调信息时根据鉴黄结果修改视频审核状态。
-上传签名计算由文件 api/v0/handler.js 实现，具体如下:
-
-```
-async function get_vod_sign(req, res) {
-    res.json({
-        code: ENUMS.ErrCode.EC_OK,
-        message: "OK",
-        data: {
-            appid: gVodHelper.conf.appid,
-            SubAppId: gVodHelper.conf.SubAppId,
-            SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
-        }
-    });
-}
-```
-
-
-
 ## 启动服务
 
 
