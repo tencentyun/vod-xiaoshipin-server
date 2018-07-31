@@ -213,7 +213,7 @@ curl -l -H "Content-type: application/json" -X POST -d '' http://localhost:8001/
 
 人工审核提交结果后，后台根据审核结果更新媒资，结果为“屏蔽”的视频显示为“涉黄”，“通过”的视频显示为“已审核”。其中只有“已通过”是视频可以播放，其他状态不可播放。如图所示：
 
-![媒资](https://main.qcloudimg.com/raw/6fb7f08313dc96ab50140ab72b3906b8.png)
+![媒资](https://main.qcloudimg.com/raw/e9cdf6f358a075b837a5ea8a51aad563.png)
 
 
 
