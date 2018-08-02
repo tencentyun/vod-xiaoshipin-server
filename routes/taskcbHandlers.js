@@ -145,31 +145,12 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
 					return;
 				}else{
 					console.log("非涉黄");
-					/*
-            		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
-					if(result.length == 0){
-						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
-						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
-						}
-						*/
 					await conn.queryAsync('update tb_ugc set review_status=? where file_id=? and review_status=?', [enums.ReviewStatus.Normal, fileId, enums.ReviewStatus.NotReivew]);
 					return;
 				}
 
 			}
 		}
-/*
-        //判断是否涉黄
-        if (param.aiReview && param.aiReview.riskType.length != 0) {
-            await conn.queryAsync('update tb_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
-            return;
-        } else {
-
-            console.log("非涉黄");
-            await conn.queryAsync('update tb_ugc set review_status=? where file_id=? and review_status=?', [enums.ReviewStatus.Normal, fileId, enums.ReviewStatus.NotReivew]);
-            return;
-        }
-*/
         //更新视频信息
         await updateBasicInfo(fileId);
 

@@ -53,7 +53,6 @@ async function get_next_file(req, res){
 		let tasksql = "select * from tb_queue where owner= ? and mark_time > SUBTIME(NOW(), ?) order by create_time limit 1";
 		let myTaskList = await conn.queryAsync(tasksql,[reviewer, EXPIRETIME]);
 		console.log(myTaskList.length);
-		//	console.log(myTask.review_data)
 		if(myTaskList.length != 0){
 			data = myTaskList[0];
 		}else{	
@@ -79,14 +78,11 @@ async function get_next_file(req, res){
 		}
 		fileid = data.file_id;
 		let fileData = await conn.queryAsync('select * from tb_ugc where file_id= ?',[fileid]);
-		//console.log(fileData.length);
-		//console.log(fileid);
 		if (fileData.length != 0){
 			userid = fileData[0].userid;
 			title = fileData[0].title;
 			url = fileData[0].play_url;
 		}
-		//console.log(url)
 	}catch (err){
 		console.log(err);
 		return res.status(500).json({
