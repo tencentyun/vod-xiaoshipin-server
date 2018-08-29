@@ -149,7 +149,7 @@ npm install
         "server":{                        
             "ip":"0.0.0.0",                 //服务启动 IP ，保持默认
             "port":8001,                    //服务启动端口，保持默认
-            "reliablecb":true               //回调选择，保持默认
+            "reliablecb":true,               //回调选择，保持默认
             "reliablecbtimeout":5000        //消息拉取轮询间隔（毫秒）
         }
 }
