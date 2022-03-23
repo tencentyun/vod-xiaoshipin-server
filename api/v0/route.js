@@ -12,6 +12,10 @@ router.all('/get_ugc_list', handler.get_ugc_list);
 
 router.all('/register', handler.register);
 
+router.all('/update_password', handler.update_password);
+
+router.all('/cancellation', handler.cancellation);
+
 router.all('/login', handler.login);
 
 router.use(middleware.veryfySign);
