@@ -9,18 +9,18 @@
         "connectionLimit":10
     },
     "tencentyunaccout":{
-        "appid":"1256244234",
-        "SubAppId":"1400091663",
-        "SecretId": "AKID3EE1e8VEZu690mnq4B9vgKq921oQg22q",
-        "SecretKey": "oTxHPSM3Y1JepsshKvOfjeMr9EBC2g8d"
+        "appid":"",
+        "SubAppId":"",
+        "SecretId": "",
+        "SecretKey": ""
     },
 
     "cos":{
-        "appid":"1256244234",
-        "bucket":"xiaoship",
-        "region":"ap-shanghai",
-        "SecretId": "AKID3EE1e8VEZu690mnq4B9vgKq921oQg22q",
-        "SecretKey": "oTxHPSM3Y1JepsshKvOfjeMr9EBC2g8d"
+        "appid":"",
+        "bucket":"",
+        "region":"",
+        "SecretId": "",
+        "SecretKey": ""
     },
 
 

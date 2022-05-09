@@ -1,12 +1,11 @@
-
-
 const APP_BASE_PATH = '../../';
 const ENUMS = require(APP_BASE_PATH + "include/enums");
 
 const crypto = require("crypto");
 const mysql = require('mysql');
 const moment = require("moment");
-
+const tencentcloud = require("tencentcloud-sdk-nodejs")
+const VodClient = tencentcloud.vod.v20180717.Client
 
 
 let VodHelper = require(APP_BASE_PATH + 'utils/vod_helper').VodHelper;
@@ -16,7 +15,7 @@ const EXPIRE_TIME = 24 * 60 * 60;
 
 
 //淘汰过期登录
-async function siftToken(){
+async function siftToken() {
     let conn = null;
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
@@ -24,7 +23,7 @@ async function siftToken(){
     } catch (err) {
 
         console.err(err);
-    } finally { 
+    } finally {
         if (conn != null) {
             conn.release();
         }
@@ -54,9 +53,8 @@ setInterval(async function () {
     siftToken()
     handleTimeoutUgc()
 
-  
-}, 60 * 60 * 1000)
 
+}, 60 * 60 * 1000)
 
 
 async function register(req, res) {
@@ -115,12 +113,145 @@ async function register(req, res) {
     });
 }
 
+async function update_password(req, res) {
+    let param = req.body;
+    let userid = param.userid;
+    let password = param.password;
+    let newPassword = param.newPassword;
+
+    if (!userid || userid.length > 50) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_INVALID_USERID,
+            "message": "用户名格式错误",
+        });
+    }
+
+    if (!password || password.length > 255) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_INVALID_PASSWORD,
+            "message": "密码格式错误",
+        });
+    }
+    if (!newPassword || newPassword.length > 255) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_INVALID_PASSWORD,
+            "message": "密码格式错误",
+        });
+    }
+
+    if (newPassword == password) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_INVALID_PASSWORD,
+            "message": "新旧密码一致",
+        })
+    }
+
+    let conn = null;
+    let result = null;
+    try {
+        conn = await gDataBases["db_litvideo"].getConnection();
+
+        result = await conn.queryAsync("update tb_account set password = ? where userid = ?", [newPassword, userid])
+        if (result.length == 0) {
+            return res.status(400).json({
+                'code': ENUMS.ErrCode.EC_DATABASE_ERROR,
+                'message': '修改密码失败'
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            'code': ENUMS.ErrCode.EC_DATABASE_ERROR,
+            'message': '服务器错误'
+        });
+    } finally {
+        if (conn != null) {
+            conn.release();
+        }
+    }
+    return res.json({
+        code: ENUMS.ErrCode.EC_OK,
+        message: 0
+    });
+}
+
+async function cancellation(req, res) {
+    let param = req.body;
+    let userid = param.userid;
+    let fileid = param.fileid;
+
+    if (!userid || userid.length > 50) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_INVALID_USERID,
+            "message": "用户名格式错误",
+        });
+    }
+    if (!fileid) {
+        return res.status(400).json({
+            "code": ENUMS.ErrCode.EC_BAD_REQUEST,
+            "message": "文件id参数错误",
+        });
+    }
+    const clientConfig = {
+    // 腾讯云认证信息
+        credential: {
+            secretId: global.GLOBAL_CONFIG.tencentyunaccount.SecretId,
+            secretKey: global.GLOBAL_CONFIG.tencentyunaccount.SecretKey,
+        },
+    // 产品地域
+        region: "ap-shanghai",
+    // 可选配置实例
+        profile: {
+            httpProfile: {
+                endpoint: "vod.tencentcloudapi.com",
+            },
+        },
+    }
+    const client = new VodClient(clientConfig)
+    let conn = null;
+    let result = null;
+    try {
+        conn = await gDataBases["db_litvideo"].getConnection();
+
+        result = await conn.queryAsync("delete from tb_account where userid = ?", [userid])
+        if (result.length == 0) {
+            return res.status(400).json({
+                'code': ENUMS.ErrCode.EC_DATABASE_ERROR,
+                'message': '账户注销失败'
+            });
+        }
+        const pparam = {
+            "FileId": fileid
+        }
+        client.DeleteMedia(pparam).then((data) => {
+            console.log("data : ", data);
+        }, (err) => {
+            console.error("error", err);
+            return err
+        })
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            'code': ENUMS.ErrCode.EC_DATABASE_ERROR,
+            'message': '服务器错误'
+        });
+    } finally {
+        if (conn != null) {
+            conn.release();
+        }
+    }
+    return res.json({
+        code: ENUMS.ErrCode.EC_OK,
+        message: 0
+    });
+}
 
 function genUserSig({
-    userid,
-    sdkAppId,
-    privateKeyPath
-}) {
+                        userid,
+                        sdkAppId,
+                        privateKeyPath
+                    }) {
     return crypto.createHash("md5").update(userid).digest("hex");
 }
 
@@ -278,10 +409,9 @@ async function get_user_info(req, res) {
 }
 
 
-
 function checkString({
-    str, minLength, maxLength
-}) {
+                         str, minLength, maxLength
+                     }) {
 
 
     if (!minLength) {
@@ -291,9 +421,9 @@ function checkString({
     if (!maxLength) {
         maxLength = 65536;
     }
-	if (!str) {
-		str = "";
-	}
+    if (!str) {
+        str = "";
+    }
     if (str == undefined && minLength > 0) {
         return false;
     }
@@ -313,28 +443,28 @@ async function upload_user_info(req, res) {
     let frontcover = param.frontcover;
     let sex = param.sex;
     console.log(avatar);
-    if (!checkString({ str: userid, maxLength: 50 })) {
+    if (!checkString({str: userid, maxLength: 50})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "用户名格式错误",
         });
     }
 
-    if (!checkString({ str: nickname, maxLength: 100 })) {
+    if (!checkString({str: nickname, maxLength: 100})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "昵称格式错误",
         });
     }
 
-    if (!checkString({ str: avatar, maxLength: 256 })) {
+    if (!checkString({str: avatar, maxLength: 256})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "头像格式错误",
         });
     }
 
-    if (!checkString({ str: frontcover, maxLength: 256 })) {
+    if (!checkString({str: frontcover, maxLength: 256})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "封面格式错误",
@@ -350,7 +480,12 @@ async function upload_user_info(req, res) {
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
 
-        let accountSql = gDataBases["db_litvideo"].makeUpdateSql("tb_account", { sex, avatar, nickname, frontcover }, mysql.format("where userid=?", [userid]))
+        let accountSql = gDataBases["db_litvideo"].makeUpdateSql("tb_account", {
+            sex,
+            avatar,
+            nickname,
+            frontcover
+        }, mysql.format("where userid=?", [userid]))
         let result = await conn.queryAsync(accountSql);
     } catch (err) {
         console.error(err);
@@ -375,43 +510,42 @@ async function upload_ugc(req, res) {
     let param = req.body;
 
 
-
-    if (!checkString({ str: param.userid, minLength: 1, maxLength: 50 })) {
+    if (!checkString({str: param.userid, minLength: 1, maxLength: 50})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "用户名格式错误",
         });
     }
 
-    if (!checkString({ str: param.file_id, minLength: 1, maxLength: 100 })) {
+    if (!checkString({str: param.file_id, minLength: 1, maxLength: 100})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "文件id格式错误",
         });
     }
 
-    if (!checkString({ str: param.title, minLength: 1, maxLength: 100 })) {
+    if (!checkString({str: param.title, minLength: 1, maxLength: 100})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "标题格式错误",
         });
     }
 
-    if (!checkString({ str: param.frontcover, minLength: 0, maxLength: 256 })) {
+    if (!checkString({str: param.frontcover, minLength: 0, maxLength: 256})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "封面格式错误",
         });
     }
 
-    if (!checkString({ str: param.location, minLength: 0, maxLength: 256 })) {
+    if (!checkString({str: param.location, minLength: 0, maxLength: 256})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "地理位置格式错误",
         });
     }
 
-    if (!checkString({ str: param.play_url, minLength: 0, maxLength: 512 })) {
+    if (!checkString({str: param.play_url, minLength: 0, maxLength: 512})) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_PARAM,
             "message": "播放地址格式错误",
@@ -471,7 +605,6 @@ async function get_ugc_list(req, res) {
     }
 
 
-
     let total = 0;
     let list = [];
     let result = null;
@@ -483,7 +616,7 @@ async function get_ugc_list(req, res) {
         total = result[0].all_count;
 
         if (total != 0) {
-            let querySql = "select a.status,a.review_status,a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid order by a.create_time desc limit ?,?";
+            let querySql = "select a.status,a.review_status,a.userid,a.file_id,a.title,a.frontcover,a.location,a.play_url,DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') as create_time,b.nickname,b.avatar from tb_ugc a left join tb_account b on a.userid=b.userid where a.review_status = 1 order by a.create_time desc limit ?,?";
             list = await conn.queryAsync(querySql, [(index - 1) * count, count]);
         }
     } catch (err) {
@@ -517,11 +650,13 @@ async function get_vod_sign(req, res) {
             appid: gVodHelper.conf.appid,
             SubAppId: gVodHelper.conf.SubAppId,
             SecretId: gVodHelper.conf.SecretId,
-            signature: gVodHelper.createFileUploadSignature({ procedure: 'content_review', vodSubAppId: gVodHelper.conf.SubAppId })
+            signature: gVodHelper.createFileUploadSignature({
+                procedure: 'content_review',
+                vodSubAppId: gVodHelper.conf.SubAppId
+            })
         }
     });
 }
-
 
 
 async function get_cos_sign(req, res) {
@@ -532,6 +667,7 @@ async function get_cos_sign(req, res) {
         //var q_key_time = (new Date('2017-11-08').getTime() / 1000 + ";" + new Date('2017-11-18').getTime() / 1000);
         return q_key_time;
     }
+
     const keyTime = getQKeyTime(EXPIRE_TIME);
     const signKey = crypto.createHmac('sha1', GLOBAL_CONFIG.tencentyunaccount.SecretKey).update(keyTime).digest('hex');
 
@@ -562,6 +698,8 @@ module.exports = {
     get_ugc_list,
     get_vod_sign,
     get_cos_sign,
-    report_user
+    report_user,
+    update_password,
+    cancellation
 }
 

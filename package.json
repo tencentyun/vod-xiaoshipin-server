@@ -21,7 +21,8 @@
     "qcloudapi-sdk": "^0.1.6",
     "querystring": "^0.2.0",
     "rolling-rate-limiter": "^0.1.10",
-    "serve-favicon": "~2.2.1"
+    "serve-favicon": "~2.2.1",
+    "tencentcloud-sdk-nodejs": "^4.0.334"
   },
   "taf": {
     "node": 0,
