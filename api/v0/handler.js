@@ -178,18 +178,10 @@ async function update_password(req, res) {
 async function cancellation(req, res) {
     let param = req.body;
     let userid = param.userid;
-    let fileid = param.fileid;
-
     if (!userid || userid.length > 50) {
         return res.status(400).json({
             "code": ENUMS.ErrCode.EC_INVALID_USERID,
             "message": "用户名格式错误",
-        });
-    }
-    if (!fileid) {
-        return res.status(400).json({
-            "code": ENUMS.ErrCode.EC_BAD_REQUEST,
-            "message": "文件id参数错误",
         });
     }
     const clientConfig = {
@@ -212,7 +204,18 @@ async function cancellation(req, res) {
     let result = null;
     try {
         conn = await gDataBases["db_litvideo"].getConnection();
-
+        fileidResult = await conn.queryAsync("select file_id from tb_ugc where userid = ?", [userid])
+        for (let i = 0; i < fileidResult.length; i++) {
+            const pparam = {
+                "FileId": fileidResult[i].file_id
+            }
+            client.DeleteMedia(pparam).then((data) => {
+                console.log("data : ", data);
+            }, (err) => {
+                console.error("error", err);
+                return err
+            })
+        }
         result = await conn.queryAsync("delete from tb_account where userid = ?", [userid])
         if (result.length == 0) {
             return res.status(400).json({
@@ -220,16 +223,6 @@ async function cancellation(req, res) {
                 'message': '账户注销失败'
             });
         }
-        const pparam = {
-            "FileId": fileid
-        }
-        client.DeleteMedia(pparam).then((data) => {
-            console.log("data : ", data);
-        }, (err) => {
-            console.error("error", err);
-            return err
-        })
-
     } catch (err) {
         console.error(err);
         return res.status(500).json({
