@@ -2,6 +2,8 @@ const request = require('request');
 const Capi = require('qcloudapi-sdk');
 const querystring = require("querystring");
 const crypto = require('crypto');
+const tencentcloud = require("tencentcloud-sdk-nodejs-vod");
+const Vod = tencentcloud.vod.v20180717;
 
 /**
  * 为腾讯云服务SDK添加es6支持
@@ -42,6 +44,12 @@ class VodHelper{
             SecretKey: conf.SecretKey,
             serviceType: 'account'
         });
+        this.vodClient = new Vod.Client({
+            credential:{
+                secretId: conf.SecretId,
+                secretKey: conf.SecretKey,
+            }
+        })
     }
 
     createFileUploadSignature({timeStamp = 86400,procedure='',classId=0,oneTimeValid=0,sourceContext='',vodSubAppId=0}) {
@@ -78,23 +86,24 @@ class VodHelper{
      * @param {fileId:视频文件ID,infoFilter:需要获取的信息，extraOpt:外网代理配置等} param0 
      */
     async getVideoInfo({fileId,infoFilter=[],extraOpt={}}){
-        let defaultData = {
-            Region: 'gz',
-            Action: 'GetVideoInfo',
-            fileId
+        let req = {
+            FileIds: [fileId],
+            Filters: infoFilter,
         }
         if(this.conf.SubAppId){
-            defaultData.SubAppId = this.conf.SubAppId;
+            req.SubAppId = parseInt(this.conf.SubAppId);
         }
-        for(let i=0;i<infoFilter.length;i++){
-            defaultData[`infoFilter.${i}`] = infoFilter[i];
-        }
-        return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
+        return await this.vodClient.DescribeMediaInfos(req);
     }
      /**
      * 请求点播平台未消费的事件通知，详细信息见：https://cloud.tencent.com/document/product/266/7829
      */
     async pullEvent({extraOpt={}}){
+        let req = {};
+        if(this.conf.SubAppId){
+            req.SubAppId = parseInt(this.conf.SubAppId);
+        }
+        return await this.vodClient.PullEvents(req);
         let defaultData = {
             Region: 'gz',
             Action: 'PullEvent',

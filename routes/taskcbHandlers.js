@@ -21,16 +21,15 @@ async function updateBasicInfo(fileId) {
         let data = await gVodHelper.getVideoInfo({ fileId, infoFilter: ['basicInfo'], extraOpt: { "proxy": "" } });
         console.log(JSON.stringify(data));
 
-        if (data.code != 0) {
+        if (data.MediaInfoSet === null || data.MediaInfoSet === undefined || data.MediaInfoSet.length == 0) {
             throw data;
         }
-        let basicInfo = data.basicInfo;
+        let basicInfo = data.MediaInfoSet[0].BasicInfo;
         let basicInfoItem = {};
-        basicInfoItem['title'] = basicInfo.name;
-        basicInfoItem['create_time'] = moment(basicInfo.createTime, 'X').format('YYYY-MM-DD HH:mm:ss');
-        basicInfoItem['frontcover'] = basicInfo.coverUrl;
-        basicInfoItem['play_url'] = basicInfo.sourceVideoUrl;
-        console.log(basicInfoItem);
+        basicInfoItem['title'] = basicInfo.Name;
+        basicInfoItem['create_time'] = moment(new Date(basicInfo.CreateTime)).format('YYYY-MM-DD HH:mm:ss');
+        basicInfoItem['frontcover'] = basicInfo.CoverUrl;
+        basicInfoItem['play_url'] = basicInfo.MediaUrl;
         let results = null;
         results = await conn.queryAsync('select * from tb_ugc where file_id=?', [fileId]);
         if (results.length == 0) {
@@ -52,13 +51,13 @@ async function updateBasicInfo(fileId) {
  * @param {消息} taskCbMsg 
  */
 async function NewFileUploadHandler(taskCbMsg) {
-    if (!taskCbMsg || taskCbMsg.eventType != enums.TaskCBEventType.NewFileUpload) {
+    if (!taskCbMsg || taskCbMsg.EventType != enums.TaskCBEventType.NewFileUpload) {
         throw { message: "can not process this task in NewFileUploadHandler" };
     }
-    let param = taskCbMsg.data;
+    let param = taskCbMsg.FileUploadEvent;
     let conn = null;
     try {
-        let fileId = param.fileId;
+        let fileId = param.FileId;
         if (!fileId) {
             return;
         }
@@ -89,12 +88,12 @@ async function NewFileUploadHandler(taskCbMsg) {
  * @param {回调消息} taskCbMsg 
  */
 async function TranscodeCompleteHandler(taskCbMsg) {
-    if (!taskCbMsg || taskCbMsg.eventType != enums.TaskCBEventType.TranscodeComplete) {
+    if (!taskCbMsg || taskCbMsg.EventType != enums.TaskCBEventType.TranscodeComplete) {
         throw { message: "can not process this task in TranscodeComplete" };
     }
-    let param = taskCbMsg.data;
+    let param = taskCbMsg.TranscodeCompleteEvent;
     try {
-        let fileId = param.fileId;
+        let fileId = param.FileId;
         await updateBasicInfo(fileId);
     } catch (err) {
         console.error(err);
@@ -107,16 +106,16 @@ async function TranscodeCompleteHandler(taskCbMsg) {
  */
 async function ProcedureStateChangedHandler(taskCbMsg) {
 	console.log("procedure")
-    if (!taskCbMsg || taskCbMsg.eventType != enums.TaskCBEventType.ProcedureStateChanged) {
+    if (!taskCbMsg || taskCbMsg.EventType != enums.TaskCBEventType.ProcedureStateChanged) {
         throw { message: "can not process this task in ProcedureStateChangedHandler" };
     }
-    let param = taskCbMsg.data;
+    let param = taskCbMsg.ProcedureStateChangeEvent;
 
     let conn = null;
     try {
 
-        let fileId = param.fileId;
-		let taskId = param.vodTaskId;
+        let fileId = param.FileId;
+		let taskId = param.TaskId;
 		
         console.log(JSON.stringify(param));
         if (!fileId) {

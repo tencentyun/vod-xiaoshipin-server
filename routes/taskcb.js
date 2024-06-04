@@ -18,7 +18,7 @@ async function handleTaskCb(req, res) {
     
     
     console.log(JSON.stringify(taskCbData));
-    const taskCbhandler = getTaskHandler(taskCbData.eventType);
+    const taskCbhandler = getTaskHandler(taskCbData.EventType);
     try {
         await taskCbhandler(taskCbData);
     } catch (err) {
