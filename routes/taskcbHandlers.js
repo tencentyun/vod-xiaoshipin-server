@@ -65,7 +65,7 @@ async function NewFileUploadHandler(taskCbMsg) {
         conn = await gDataBases["db_litvideo"].getConnection();
         let basicInfoItem = {};
         basicInfoItem['userid'] = "001";
-        basicInfoItem['file_id'] = param['fileId'];
+        basicInfoItem['file_id'] = fileId;
         basicInfoItem['status'] = enums.ResourceStatus.READY;
         basicInfoItem['review_status'] = enums.ReviewStatus.NotReivew;
         let results = null;
