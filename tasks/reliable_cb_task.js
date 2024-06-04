@@ -24,7 +24,7 @@ async function runReliableCbTask(){
         }
         let msgHandles = [];
         for(let event of result.EventSet){
-            console.log(event);
+            console.log(JSON.stringify(event));
             const taskCbhandler = getTaskHandler(event.EventType);
             try {
                 await taskCbhandler(event);
