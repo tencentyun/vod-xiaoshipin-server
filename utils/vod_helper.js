@@ -104,34 +104,41 @@ class VodHelper{
             req.SubAppId = parseInt(this.conf.SubAppId);
         }
         return await this.vodClient.PullEvents(req);
-        let defaultData = {
-            Region: 'gz',
-            Action: 'PullEvent',
-        }
-        if(this.conf.SubAppId){
-            defaultData.SubAppId = this.conf.SubAppId;
-        }
-        return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
+        // let defaultData = {
+        //     Region: 'gz',
+        //     Action: 'PullEvent',
+        // }
+        // if(this.conf.SubAppId){
+        //     defaultData.SubAppId = this.conf.SubAppId;
+        // }
+        // return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
     }
 
     /**
      * 向vod平台确认消费事件通知，详细信息：https://cloud.tencent.com/document/product/266/7829
      */
     async comfireEvent({msgHandles=[],extraOpt={}}){
-        let defaultData = {
-            Region: 'gz',
-            Action: 'ConfirmEvent'
-        }
-
+        let req = {
+            EventHandles: msgHandles,
+        };
         if(this.conf.SubAppId){
-            defaultData.SubAppId = this.conf.SubAppId;
+            req.SubAppId = parseInt(this.conf.SubAppId);
         }
+        return await this.vodClient.ConfirmEvents(req);
+        // let defaultData = {
+        //     Region: 'gz',
+        //     Action: 'ConfirmEvent'
+        // }
 
-        for(let i=0;i<msgHandles.length;i++){
+        // if(this.conf.SubAppId){
+        //     defaultData.SubAppId = this.conf.SubAppId;
+        // }
+
+        // for(let i=0;i<msgHandles.length;i++){
        
-            defaultData[`msgHandle.${i}`] = msgHandles[i];
-        }
-        return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
+        //     defaultData[`msgHandle.${i}`] = msgHandles[i];
+        // }
+        // return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
     }
 }
 

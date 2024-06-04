@@ -122,9 +122,9 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
             return;
         }
         conn = await gDataBases["db_litvideo"].getConnection();
-		for(let review of param.contentReviewList){
-			if (review.taskType == "Porn" && review.status == "SUCCESS"){
-				if (review.output.suggestion == "review"){
+		for(let review of param.AiContentReviewResultSet){
+			if (review.Type == "Porn" && review.PornTask && review.PornTask.Status == "SUCCESS"){
+				if (review.PornTask.Output && review.PornTask.Output.Suggestion == "review"){
 					console.log(review);
             		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
 					if(result.length == 0){
@@ -133,7 +133,7 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
 						}
 					return;
 					
-				}else if (review.output.suggestion == "block"){
+				}else if (review.PornTask.Output && review.PornTask.Output.Suggestion == "block"){
 					console.log("涉黄");
 					await conn.queryAsync('update tb_ugc set review_status=? where file_id=?', [enums.ReviewStatus.Porn, fileId]);
             		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
@@ -184,6 +184,6 @@ function getTaskHandler(type) {
 }
 
 module.exports = {
-    getTaskHandler
+    getTaskHandler,
 }
 
