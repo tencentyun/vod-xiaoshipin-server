@@ -21,7 +21,7 @@ async function updateBasicInfo(fileId) {
         let data = await gVodHelper.getVideoInfo({ fileId, infoFilter: ['basicInfo'], extraOpt: { "proxy": "" } });
         console.log(JSON.stringify(data));
 
-        if (data.MediaInfoSet === null || data.MediaInfoSet === undefined || data.MediaInfoSet.length == 0) {
+        if (!data.MediaInfoSet || data.MediaInfoSet.length == 0) {
             throw data;
         }
         let basicInfo = data.MediaInfoSet[0].BasicInfo;
@@ -233,6 +233,6 @@ function getTaskHandler(type) {
 }
 
 module.exports = {
-    getTaskHandler,
+    getTaskHandler
 }
 

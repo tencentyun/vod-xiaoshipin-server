@@ -78,14 +78,6 @@ class VodHelper{
             req.SubAppId = parseInt(this.conf.SubAppId);
         }
         return await this.vodClient.PullEvents(req);
-        // let defaultData = {
-        //     Region: 'gz',
-        //     Action: 'PullEvent',
-        // }
-        // if(this.conf.SubAppId){
-        //     defaultData.SubAppId = this.conf.SubAppId;
-        // }
-        // return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
     }
 
     /**
@@ -99,20 +91,6 @@ class VodHelper{
             req.SubAppId = parseInt(this.conf.SubAppId);
         }
         return await this.vodClient.ConfirmEvents(req);
-        // let defaultData = {
-        //     Region: 'gz',
-        //     Action: 'ConfirmEvent'
-        // }
-
-        // if(this.conf.SubAppId){
-        //     defaultData.SubAppId = this.conf.SubAppId;
-        // }
-
-        // for(let i=0;i<msgHandles.length;i++){
-       
-        //     defaultData[`msgHandle.${i}`] = msgHandles[i];
-        // }
-        // return await this.capi.asyncRequest(defaultData,{serviceType:'vod',method:"GET"},extraOpt);
     }
 }
 

@@ -11,9 +11,8 @@ const extraOpt = {};
 async function runReliableCbTask(){
     try{
         let result = await vodHelper.pullEvent({extraOpt});
-        console.log(result.RequestId);
 
-        if(result.EventSet == null || result.EventSet == undefined ){
+        if(!result.EventSet){
             console.error("pullEvent failed:"+JSON.stringify(result));
             return;
         }
