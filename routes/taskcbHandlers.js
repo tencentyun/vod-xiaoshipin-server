@@ -134,7 +134,8 @@ function convertReviewResult(reviewResult) {
                 "confidence": segment.Confidence,
                 "suggestion": segment.Suggestion,
                 "url": segment.Url,
-                "picUrlExpireTime": segment.PicUrlExpireTime
+                "picUrlExpireTime": segment.PicUrlExpireTime,
+                "picUrlExpireTimeStamp": segment.PicUrlExpireTimeStamp,
             })
         }
         if (reviewResult.PornTask.Output.SegmentSetFileUrl) {
