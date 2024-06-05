@@ -101,6 +101,55 @@ async function TranscodeCompleteHandler(taskCbMsg) {
 }
 
 /**
+ * 转换字段名，对齐前端
+ * @param {*} reviewResult 
+ */
+function convertReviewResult(reviewResult) {
+    let result = {
+        "errCode": reviewResult.PornTask.ErrCode,
+        "errCodeExt": reviewResult.PornTask.ErrCodeExt,
+        "message": reviewResult.PornTask.Message,
+        "taskType": reviewResult.Type,
+        "status": reviewResult.PornTask.Status,
+        "progress": reviewResult.PornTask.Progress,
+    };
+
+    if (reviewResult.PornTask.Input) {
+        result["input"] = {
+            "definition": reviewResult.PornTask.Input.Definition,
+        }
+    }
+
+    if (reviewResult.PornTask.Output) {
+        let output = {
+            "confidence": reviewResult.PornTask.Output.Confidence,
+            "suggestion": reviewResult.PornTask.Output.Suggestion,
+            "label": reviewResult.PornTask.Output.Label,
+			"segments": [],
+        }
+        for(let segment of reviewResult.PornTask.Output.SegmentSet){
+            output["segments"].push({
+                "startTimeOffset": segment.StartTimeOffset,
+                "endTimeOffset": segment.EndTimeOffset,
+                "confidence": segment.Confidence,
+                "suggestion": segment.Suggestion,
+                "url": segment.Url,
+                "picUrlExpireTime": segment.PicUrlExpireTime
+            })
+        }
+        if (reviewResult.PornTask.Output.SegmentSetFileUrl) {
+            output["segmentsFileUrl"] = reviewResult.PornTask.Output.SegmentSetFileUrl;
+        }
+        if (reviewResult.PornTask.Output.SegmentSetFileUrlExpireTime) {
+            output["segmentsFileUrlExpireTime"] = reviewResult.PornTask.Output.SegmentSetFileUrlExpireTime;
+        }
+        result["output"] = output;
+    }
+
+    return result
+}
+
+/**
  * 处理状态更新
  * @param {*} taskCbMsg 
  */
@@ -129,7 +178,7 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
             		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
 					if(result.length == 0){
 						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
-						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
+						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(convertReviewResult(review))]);
 						}
 					return;
 					
@@ -139,7 +188,7 @@ async function ProcedureStateChangedHandler(taskCbMsg) {
             		let result = await conn.queryAsync('select * from tb_queue where task_id=?', [taskId]);
 					if(result.length == 0){
 						let sql = "insert into tb_queue(task_id,file_id,review_data) values(?,?,?)";
-						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(review)]);
+						await conn.queryAsync(sql, [taskId, fileId,JSON.stringify(convertReviewResult(review))]);
 						}
 					return;
 				}else{

@@ -1,29 +1,8 @@
 const request = require('request');
-const Capi = require('qcloudapi-sdk');
 const querystring = require("querystring");
 const crypto = require('crypto');
 const tencentcloud = require("tencentcloud-sdk-nodejs-vod");
 const Vod = tencentcloud.vod.v20180717;
-
-/**
- * 为腾讯云服务SDK添加es6支持
- * @param {请求数据,将作为GET或者POST方法输入参数} params 
- * @param {HTTP请求配置，如方法设置等} opts 
- * @param {额外配置项,如外网代理等} extras 
- */
-function CpiAsyncRequest(params,opts={},extras={}) {
-    let self = this;
-    return new Promise(function (resolve, reject) {
-        self.request(params,opts, function (error, data) {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve(data);
-        },extras)
-    });
-}
-Capi.prototype.asyncRequest = CpiAsyncRequest;
 
 const Enum = {
     Action:{
@@ -39,11 +18,6 @@ class VodHelper{
 
     constructor(conf) {
         this.conf = conf;
-        this.capi = new Capi({
-            SecretId: conf.SecretId,
-            SecretKey: conf.SecretKey,
-            serviceType: 'account'
-        });
         this.vodClient = new Vod.Client({
             credential:{
                 secretId: conf.SecretId,
