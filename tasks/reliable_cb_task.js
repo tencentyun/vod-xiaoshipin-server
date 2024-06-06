@@ -12,24 +12,25 @@ async function runReliableCbTask(){
     try{
         let result = await vodHelper.pullEvent({extraOpt});
 
-        if(result.code==4000){
-            return;
-        }
-
-        if(result.code!=0){
+        if(!result.EventSet){
             console.error("pullEvent failed:"+JSON.stringify(result));
             return;
         }
+
+        if(result.EventSet.length==0){
+            console.log("not callback event")
+            return;
+        }
         let msgHandles = [];
-        for(let event of result.eventList){
-            console.log(event);
-            const taskCbhandler = getTaskHandler(event.eventContent.eventType);
+        for(let event of result.EventSet){
+            console.log(JSON.stringify(event));
+            const taskCbhandler = getTaskHandler(event.EventType);
             try {
-                await taskCbhandler(event.eventContent);
+                await taskCbhandler(event);
             } catch (err) {
                 console.error(err);
             }finally{
-                msgHandles.push(event.msgHandle);
+                msgHandles.push(event.EventHandle);
             }
         }
         await vodHelper.comfireEvent({msgHandles,extraOpt});

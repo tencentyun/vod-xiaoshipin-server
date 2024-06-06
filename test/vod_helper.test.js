@@ -20,14 +20,14 @@ describe('VodHelper test', function () {
             fileId:"7447398155217586128",
             extraOpt
         });
-        assert.notEqual(data.code,undefined);
+        assert.notEqual(data.MediaInfoSet,undefined);
     });
 
     it('getVideoInfo With filter', async function () {
         let data = await vodHelper.getVideoInfo({
             fileId:"7447398155217586128",infoFilter:['transcodeInfo'],extraOpt
         });
-        assert.equal(data.basicInfo,undefined);
+        assert.equal(data.MediaInfoSet[0].BasicInfo,undefined);
     });
 
     it('createFileUploadSignature', async function () {

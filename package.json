@@ -18,10 +18,10 @@
     "moment": "^2.21.0",
     "morgan": "~1.5.3",
     "mysql": "^2.15.0",
-    "qcloudapi-sdk": "^0.1.6",
     "querystring": "^0.2.0",
     "rolling-rate-limiter": "^0.1.10",
-    "serve-favicon": "~2.2.1"
+    "serve-favicon": "~2.2.1",
+    "tencentcloud-sdk-nodejs-vod": "^4.0.857"
   },
   "taf": {
     "node": 0,
